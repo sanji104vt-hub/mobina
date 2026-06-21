@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#07080F">
+
+<!-- ===== SEO: Search Console確認タグ・GA4タグはこの付近に「差分追加」する。丸ごと置換しないこと ===== -->
+<title>Mobina（モビナ）｜持ち歩きガジェット比較 - イヤホン・モバイルバッテリーを軽さで選ぶ</title>
+<meta name="description" content="ワイヤレスイヤホンとモバイルバッテリーを「軽さ・性能・コスパ」で比較。外出を快適にする持ち歩きガジェットを、用途に合わせて選べる比較サイトです。">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://mobina.workers.dev/">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Mobina｜持ち歩きガジェット比較">
+<meta property="og:description" content="イヤホン×モバイルバッテリーを軽さで選ぶ比較サイト。">
+<meta property="og:url" content="https://mobina.workers.dev/">
+<meta property="og:site_name" content="Mobina">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#07080F;
+  --panel:#0D1120;
+  --panel-2:#0A0E1A;
+  --ink:#D6DEF2;
+  --ink-soft:#8590AE;
+  --ink-faint:#525B7C;
+  --line:rgba(120,150,230,.14);
+  --line-bright:rgba(120,150,230,.28);
+
+  --cyan:#1AE7FF;          /* AUDIO / シグナル */
+  --magenta:#FF2E9E;       /* POWER / 給電 */
+  --amber:#FFC53D;         /* 警告 / PR */
+  --cyan-glow:rgba(26,231,255,.55);
+  --magenta-glow:rgba(255,46,158,.5);
+
+  --disp:"Chakra Petch","Zen Kaku Gothic New",system-ui,sans-serif;
+  --mono:"Space Mono",ui-monospace,SFMono-Regular,monospace;
+  --body:"Zen Kaku Gothic New",system-ui,-apple-system,sans-serif;
+  --radius:4px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--body);color:var(--ink);line-height:1.7;
+  background:
+    radial-gradient(1100px 520px at 82% -8%, rgba(255,46,158,.10), transparent 60%),
+    radial-gradient(1000px 600px at 5% 4%, rgba(26,231,255,.10), transparent 58%),
+    var(--bg);
+  background-attachment:fixed;
+  -webkit-font-smoothing:antialiased;position:relative;overflow-x:hidden;
+}
+/* 全体グリッド */
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(120,150,230,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(120,150,230,.05) 1px,transparent 1px);
+  background-size:46px 46px;
+  mask-image:radial-gradient(ellipse 100% 80% at 50% 0%, #000 30%, transparent 85%);
+}
+/* スキャンライン */
+body::after{
+  content:"";position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.5;
+  background:repeating-linear-gradient(0deg, rgba(0,0,0,0) 0 2px, rgba(0,0,0,.18) 2px 3px);
+  mix-blend-mode:multiply;
+}
+a{color:inherit;text-decoration:none}
+img{max-width:100%;display:block}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+::selection{background:var(--cyan);color:#03121a}
+.wrap{max-width:1200px;margin:0 auto;padding:0 22px;position:relative;z-index:2}
+
+/* ====== ヘッダー ====== */
+.site-header{position:sticky;top:0;z-index:50;background:rgba(7,8,15,.72);
+  backdrop-filter:blur(12px) saturate(140%);border-bottom:1px solid var(--line);}
+.header-inner{display:flex;align-items:center;gap:26px;height:62px}
+.logo{font-family:var(--disp);font-weight:700;font-size:22px;letter-spacing:.06em;display:flex;align-items:center;gap:2px}
+.logo b{color:var(--ink)}
+.logo .c{color:var(--cyan);text-shadow:0 0 14px var(--cyan-glow)}
+.logo .sq{width:9px;height:9px;margin-left:7px;background:var(--magenta);box-shadow:0 0 12px var(--magenta-glow);
+  animation:blink 1.6s steps(1) infinite}
+@keyframes blink{0%,60%{opacity:1}61%,100%{opacity:.25}}
+.nav{display:flex;gap:2px;margin-left:auto}
+.nav a{font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--ink-soft);
+  padding:8px 12px;border:1px solid transparent;transition:.16s;text-transform:uppercase}
+.nav a:hover{color:var(--cyan);border-color:var(--line-bright);box-shadow:inset 0 0 12px rgba(26,231,255,.08)}
+.nav a.is-active{color:var(--cyan)}
+.menu-btn{display:none;margin-left:auto;background:none;border:1px solid var(--line-bright);
+  color:var(--ink);width:42px;height:42px;font-size:18px;cursor:pointer}
+
+/* ====== ヒーロー ====== */
+.hero{position:relative;padding:74px 0 52px;overflow:hidden}
+.hero::before{content:"";position:absolute;left:50%;top:50%;width:140%;height:200%;transform:translate(-50%,-30%) perspective(420px) rotateX(58deg);
+  background-image:linear-gradient(var(--cyan) 1px,transparent 1px),linear-gradient(90deg,rgba(255,46,158,.5) 1px,transparent 1px);
+  background-size:60px 60px;opacity:.10;mask-image:linear-gradient(transparent,#000 60%,transparent);
+  animation:grid 8s linear infinite;z-index:0}
+@keyframes grid{to{background-position:0 60px,60px 0}}
+.hero-inner{position:relative;z-index:2;max-width:720px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--cyan);
+  border:1px solid var(--line-bright);padding:6px 13px;display:inline-flex;align-items:center;gap:9px;margin-bottom:24px;
+  background:rgba(26,231,255,.05)}
+.eyebrow .cur{width:8px;height:15px;background:var(--cyan);box-shadow:0 0 10px var(--cyan-glow);animation:blink 1.1s steps(1) infinite}
+h1.hero-title{font-family:var(--disp);font-weight:700;font-size:clamp(32px,6vw,58px);line-height:1.12;letter-spacing:.01em;
+  margin-bottom:20px;color:#fff;text-shadow:2px 0 var(--magenta),-2px 0 var(--cyan);animation:glitch 5.5s steps(1) infinite}
+@keyframes glitch{0%,93%,100%{text-shadow:2px 0 var(--magenta),-2px 0 var(--cyan)}
+  94%{text-shadow:-3px 0 var(--magenta),3px 1px var(--cyan)}96%{text-shadow:3px -1px var(--magenta),-3px 0 var(--cyan)}}
+h1.hero-title .hl{color:var(--cyan);text-shadow:0 0 22px var(--cyan-glow)}
+h1.hero-title .hm{color:var(--magenta);text-shadow:0 0 22px var(--magenta-glow)}
+.hero-sub{font-size:16px;color:var(--ink-soft);max-width:560px;margin-bottom:32px}
+.searchbar{position:relative;display:flex;align-items:center;gap:11px;max-width:540px;
+  background:var(--panel);border:1px solid var(--line-bright);padding:13px 16px;transition:.2s}
+.searchbar::before,.searchbar::after{content:"";position:absolute;width:9px;height:9px;border:2px solid var(--cyan)}
+.searchbar::before{left:-1px;top:-1px;border-right:0;border-bottom:0}
+.searchbar::after{right:-1px;bottom:-1px;border-left:0;border-top:0}
+.searchbar:focus-within{border-color:var(--cyan);box-shadow:0 0 0 1px var(--cyan),0 0 26px rgba(26,231,255,.18)}
+.searchbar svg{color:var(--cyan);flex:0 0 auto}
+.searchbar input{flex:1;border:none;outline:none;background:none;color:var(--ink);font-family:var(--mono);font-size:14px}
+.searchbar input::placeholder{color:var(--ink-faint)}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.chip{font-family:var(--mono);font-size:12.5px;letter-spacing:.03em;padding:9px 15px;cursor:pointer;
+  background:var(--panel);border:1px solid var(--line-bright);color:var(--ink-soft);transition:.15s;
+  display:inline-flex;align-items:center;gap:7px;text-transform:uppercase}
+.chip:hover{color:var(--ink);border-color:var(--ink-soft)}
+.chip[data-cat=earphone].is-active{color:#03121a;background:var(--cyan);border-color:var(--cyan);box-shadow:0 0 20px var(--cyan-glow)}
+.chip[data-cat=battery].is-active{color:#1a0410;background:var(--magenta);border-color:var(--magenta);box-shadow:0 0 20px var(--magenta-glow)}
+.chip[data-cat=all].is-active{color:var(--bg);background:var(--ink);border-color:var(--ink)}
+
+/* ====== PR表記 ====== */
+.pr-bar{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(255,197,61,.03)}
+.pr-bar .wrap{display:flex;align-items:center;gap:10px;padding:11px 22px;font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);letter-spacing:.02em}
+.pr-tag{color:var(--amber);border:1px solid var(--amber);padding:1px 7px;font-weight:700;font-size:10px;letter-spacing:.08em}
+
+/* ====== ツールバー ====== */
+.toolbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:26px 0 18px}
+.result-count{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);letter-spacing:.05em}
+.result-count b{color:var(--cyan);font-size:16px}
+.toolbar-right{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.filter-toggle{font-family:var(--mono);font-size:12px;letter-spacing:.05em;color:var(--ink);background:var(--panel);
+  border:1px solid var(--line-bright);padding:10px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;text-transform:uppercase;transition:.15s}
+.filter-toggle:hover{border-color:var(--cyan);color:var(--cyan)}
+.filter-toggle .badge{font-family:var(--mono);font-size:10px;background:var(--cyan);color:#03121a;min-width:17px;height:17px;
+  display:inline-flex;align-items:center;justify-content:center;padding:0 4px;font-weight:700}
+.select-wrap{position:relative}
+.select-wrap select{appearance:none;font-family:var(--mono);font-size:12px;color:var(--ink);background:var(--panel);
+  border:1px solid var(--line-bright);padding:10px 36px 10px 14px;cursor:pointer;letter-spacing:.02em}
+.select-wrap::after{content:"▾";position:absolute;right:13px;top:50%;transform:translateY(-50%);color:var(--cyan);pointer-events:none;font-size:12px}
+
+.filters{display:none;gap:26px;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line-bright);padding:22px 24px;margin-bottom:22px;position:relative}
+.filters.open{display:flex}
+.filters .fgroup{min-width:172px}
+.filters h4{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--cyan);text-transform:uppercase;margin-bottom:12px}
+.fopt{display:flex;align-items:center;gap:9px;font-size:13.5px;padding:4px 0;cursor:pointer;color:var(--ink-soft)}
+.fopt input{accent-color:var(--cyan);width:15px;height:15px;cursor:pointer}
+.fopt:hover{color:var(--ink)}
+
+/* ====== グリッド / ユニットカード ====== */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(308px,1fr));gap:20px;padding-bottom:64px}
+.unit{position:relative;background:linear-gradient(180deg,var(--panel),var(--panel-2));border:1px solid var(--line-bright);
+  padding:20px 19px;display:flex;flex-direction:column;transition:transform .18s,border-color .18s,box-shadow .18s}
+.unit.ear{--c:var(--cyan);--cg:var(--cyan-glow)}
+.unit.batt{--c:var(--magenta);--cg:var(--magenta-glow)}
+.unit:hover{transform:translateY(-3px);border-color:var(--c);box-shadow:0 0 0 1px var(--c),0 14px 40px rgba(0,0,0,.5),0 0 30px -6px var(--cg)}
+.tick{position:absolute;width:10px;height:10px;border:2px solid var(--c);opacity:.0;transition:.18s}
+.unit:hover .tick{opacity:.9}
+.tick.tl{left:-1px;top:-1px;border-right:0;border-bottom:0}
+.tick.tr{right:-1px;top:-1px;border-left:0;border-bottom:0}
+.tick.bl{left:-1px;bottom:-1px;border-right:0;border-top:0}
+.tick.br{right:-1px;bottom:-1px;border-left:0;border-top:0}
+.u-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.tag{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--c);
+  border:1px solid var(--c);padding:3px 9px;text-shadow:0 0 10px var(--cg)}
+.fav{background:none;border:none;cursor:pointer;color:var(--ink-faint);font-size:18px;line-height:1;transition:.15s;font-family:var(--mono)}
+.fav:hover{color:var(--c);text-shadow:0 0 10px var(--cg)}
+.fav.on{color:var(--c);text-shadow:0 0 12px var(--cg)}
+.u-thumb{height:142px;margin-bottom:15px;display:flex;align-items:center;justify-content:center;font-size:48px;
+  background:radial-gradient(circle at 50% 40%, color-mix(in srgb,var(--c) 14%, transparent), transparent 70%), var(--panel-2);
+  border:1px solid var(--line);position:relative}
+.u-thumb::after{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:22px 22px;opacity:.5}
+.u-brand{font-family:var(--mono);font-size:11px;color:var(--ink-faint);letter-spacing:.04em;margin-bottom:3px;text-transform:uppercase}
+.u-name{font-family:var(--disp);font-weight:600;font-size:17px;line-height:1.32;margin-bottom:11px;color:#fff;letter-spacing:.01em}
+.u-rating{display:flex;align-items:center;gap:8px;margin-bottom:13px;font-family:var(--mono);font-size:12px}
+.u-rating .stars{color:var(--amber);letter-spacing:1px}
+.u-rating .num{color:var(--ink)}
+.u-rating .rev{color:var(--ink-faint)}
+.u-rating.awaiting{color:var(--ink-faint);letter-spacing:.05em}
+.u-mass{background:var(--panel-2);border:1px solid var(--line);padding:11px 13px;margin-bottom:14px}
+.mass-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.mass-l{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--ink-faint)}
+.mass-v{font-family:var(--mono);font-weight:700;font-size:21px;color:#fff;line-height:1}
+.mass-v i{font-size:11px;color:var(--ink-soft);font-style:normal;margin-left:2px}
+.gauge{height:5px;background:rgba(255,255,255,.06);position:relative;overflow:hidden}
+.gauge span{position:absolute;inset:0 auto 0 0;background:var(--c);box-shadow:0 0 12px var(--cg)}
+.u-axes{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.ax{display:grid;grid-template-columns:62px 1fr 24px;align-items:center;gap:9px}
+.ax-l{font-size:10.5px;color:var(--ink-soft);font-family:var(--mono)}
+.ax-t{height:4px;background:rgba(255,255,255,.06);overflow:hidden}
+.ax-t i{display:block;height:100%;background:var(--c);box-shadow:0 0 8px var(--cg)}
+.ax-v{font-family:var(--mono);font-size:10.5px;color:var(--ink-soft);text-align:right}
+.u-specs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.spec{font-family:var(--mono);font-size:10.5px;color:var(--ink-soft);border:1px solid var(--line);padding:3px 8px;letter-spacing:.01em}
+.spec::before{content:"›";color:var(--c);margin-right:4px}
+.u-foot{margin-top:auto;display:flex;align-items:flex-end;gap:10px}
+.price{font-family:var(--mono);font-weight:700;font-size:21px;color:#fff;line-height:1.1}
+.price i{font-size:13px;color:var(--c);font-style:normal;margin-right:1px}
+.price em{display:block;font-size:9.5px;color:var(--ink-faint);font-style:normal;font-weight:400;letter-spacing:.03em}
+.acquire{margin-left:auto;position:relative;font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.05em;
+  color:var(--bg);background:var(--c);padding:11px 15px;display:inline-flex;align-items:center;gap:7px;transition:.16s;box-shadow:0 0 18px -4px var(--cg)}
+.acquire:hover{transform:translateY(-1px);box-shadow:0 0 26px -2px var(--cg)}
+.acquire .prm{position:absolute;top:-8px;right:-6px;background:var(--bg);color:var(--c);border:1px solid var(--c);font-size:8px;padding:1px 4px;letter-spacing:.06em}
+
+.empty{grid-column:1/-1;text-align:center;padding:72px 20px;color:var(--ink-soft);font-family:var(--mono)}
+.empty .big{font-size:38px;margin-bottom:14px;color:var(--cyan)}
+.empty h3{font-family:var(--disp);color:#fff;margin-bottom:6px;font-weight:600}
+.empty button{margin-top:18px;font-family:var(--mono);background:none;color:var(--cyan);border:1px solid var(--cyan);padding:10px 18px;cursor:pointer;letter-spacing:.05em;text-transform:uppercase}
+.empty button:hover{background:var(--cyan);color:#03121a}
+
+/* ====== フッター ====== */
+.site-footer{border-top:1px solid var(--line-bright);background:var(--panel-2);padding:48px 0 30px;margin-top:18px;position:relative;z-index:2}
+.footer-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:30px;margin-bottom:30px}
+.site-footer .logo{margin-bottom:13px}
+.footer-about{font-size:13px;color:var(--ink-faint);max-width:320px}
+.site-footer h5{font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--cyan);text-transform:uppercase;margin-bottom:13px}
+.site-footer ul{list-style:none;display:flex;flex-direction:column;gap:9px}
+.site-footer ul a{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);transition:.15s}
+.site-footer ul a:hover{color:var(--cyan)}
+.footer-disclosure{font-family:var(--mono);font-size:11px;color:var(--ink-faint);border-top:1px solid var(--line);padding-top:20px;line-height:1.9;letter-spacing:.01em}
+
+@media(max-width:760px){
+  .nav{display:none}.menu-btn{display:block}
+  .footer-grid{grid-template-columns:1fr;gap:24px}
+  .toolbar-right{width:100%}.hero{padding:52px 0 40px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  h1.hero-title{text-shadow:1.5px 0 var(--magenta),-1.5px 0 var(--cyan)}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a href="/" class="logo" aria-label="Mobina ホーム"><b>MOBINA</b><span class="c">_</span><span class="sq"></span></a>
+    <nav class="nav">
+      <a href="#list" class="is-active">商品一覧</a>
+      <a href="#" aria-disabled="true">ランキング</a>
+      <a href="#" aria-disabled="true">セット診断</a>
+      <a href="#" aria-disabled="true">コラム</a>
+      <a href="#" aria-disabled="true">お気に入り</a>
+    </nav>
+    <button class="menu-btn" aria-label="メニュー">▤</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-inner">
+    <span class="eyebrow">MOBINA::PORTABLE_GEAR.DB<span class="cur"></span></span>
+    <h1 class="hero-title">外出を、<span class="hl">最適化</span>する。</h1>
+    <p class="hero-sub">ワイヤレス<span style="color:var(--cyan)">イヤホン</span> × モバイル<span style="color:var(--magenta)">バッテリー</span>を、重量・性能・コスパで解析。毎日の持ち歩きに最適な"装備"を選び出す比較データベース。</p>
+    <label class="searchbar">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><path d="m20 20-3-3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input id="search" type="search" placeholder="SEARCH // 商品・ブランド・特徴（例: ノイキャン, PD, 軽量）" autocomplete="off">
+    </label>
+    <div class="chips" id="catChips">
+      <button class="chip is-active" data-cat="all">ALL_UNITS</button>
+      <button class="chip" data-cat="earphone">◢ AUDIO / イヤホン</button>
+      <button class="chip" data-cat="battery">◢ POWER / バッテリー</button>
+    </div>
+  </div>
+</section>
+
+<div class="pr-bar">
+  <div class="wrap">
+    <span class="pr-tag">PR</span>
+    当サイトはアフィリエイト広告（楽天アフィリエイト・Amazonアソシエイト等）を利用しています。価格・評価は参考値です。
+  </div>
+</div>
+
+<main class="wrap" id="list">
+  <div class="toolbar">
+    <div class="result-count">// <b id="count">0</b> 件 MATCHED</div>
+    <div class="toolbar-right">
+      <button class="filter-toggle" id="filterToggle">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 5h18M6 12h12M10 19h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        FILTER <span class="badge" id="filterBadge" style="display:none">0</span>
+      </button>
+      <div class="select-wrap">
+        <select id="sort">
+          <option value="recommend">SORT: おすすめ（Mobinaスコア）</option>
+          <option value="price-asc">SORT: 価格が安い順</option>
+          <option value="price-desc">SORT: 価格が高い順</option>
+          <option value="rating">SORT: 評価が高い順</option>
+          <option value="light">SORT: 軽い順</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="filters" id="filters">
+    <div class="fgroup">
+      <h4>価格帯</h4>
+      <label class="fopt"><input type="checkbox" data-f="price" value="u3000">〜3,000円</label>
+      <label class="fopt"><input type="checkbox" data-f="price" value="3to8">3,000〜8,000円</label>
+      <label class="fopt"><input type="checkbox" data-f="price" value="o8000">8,000円〜</label>
+    </div>
+    <div class="fgroup">
+      <h4>AUDIO / イヤホン</h4>
+      <label class="fopt"><input type="checkbox" data-f="tag" value="ノイキャン">ノイズキャンセリング</label>
+      <label class="fopt"><input type="checkbox" data-f="tag" value="防水">防水(IPX4以上)</label>
+      <label class="fopt"><input type="checkbox" data-f="tag" value="ロングバッテリー">ロング再生</label>
+    </div>
+    <div class="fgroup">
+      <h4>POWER / バッテリー</h4>
+      <label class="fopt"><input type="checkbox" data-f="tag" value="PD対応">PD急速充電</label>
+      <label class="fopt"><input type="checkbox" data-f="tag" value="ワイヤレス充電">ワイヤレス充電</label>
+      <label class="fopt"><input type="checkbox" data-f="tag" value="大容量">大容量(10000mAh+)</label>
+    </div>
+  </div>
+
+  <div class="grid" id="grid"></div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <div class="logo"><b>MOBINA</b><span class="c">_</span></div>
+        <p class="footer-about">「外出を快適にする持ち歩きガジェット」を、軽さ・性能・コスパで比較するメディア。イヤホンとモバイルバッテリーを横断し、あなたの外出スタイルに合う組み合わせを提案します。</p>
+      </div>
+      <div>
+        <h5>Contents</h5>
+        <ul>
+          <li><a href="#list">商品一覧</a></li>
+          <li><a href="#">カテゴリ別ランキング</a></li>
+          <li><a href="#">持ち歩きセット診断</a></li>
+          <li><a href="#">コラム</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Site Info</h5>
+        <ul>
+          <li><a href="#">運営者情報</a></li>
+          <li><a href="#">広告・アフィリエイトの表示について</a></li>
+          <li><a href="#">プライバシーポリシー</a></li>
+          <li><a href="#">お問い合わせ</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-disclosure">
+      <span class="pr-tag">PR</span>
+      当サイトはアフィリエイトプログラム（楽天アフィリエイト、Amazonアソシエイト・プログラム等）により商品を紹介し、収益を得ています。掲載の価格・スペック・評価は本サイト独自の集計を含む参考情報であり、最新・正確な情報は各販売ページをご確認ください。価格は <span id="priceDate"></span> 時点の参考価格です。<br>© 2026 Mobina. 当サイトのコンテンツの無断転載を禁じます。
+    </div>
+  </div>
+</footer>
+
+<noscript>
+  <div style="max-width:1180px;margin:0 auto;padding:30px 20px;color:#D6DEF2">
+    <h2>持ち歩きガジェット一覧（Mobina）</h2>
+    <ul>
+      <li>Anker Soundcore Liberty 4 NC - ワイヤレスイヤホン / ノイズキャンセリング・LDAC・ケース込50時間・IPX4。参考価格 12,990円</li>
+      <li>Sony WF-1000XM5 - ワイヤレスイヤホン / 業界最高クラスのノイキャン・LDAC/LE Audio。参考価格 36,300円</li>
+      <li>Anker Soundcore P40i - ワイヤレスイヤホン / ノイキャン・ケース込60時間・IPX5。参考価格 7,990円</li>
+      <li>Shokz OpenFit 2 - オープンイヤー型イヤホン / 耳をふさがない・IP55・ケース込48時間。参考価格 25,880円</li>
+      <li>Anker Power Bank (Fusion, 30W) - モバイルバッテリー / 10000mAh・PD30W・コンセント一体。参考価格 7,990円</li>
+      <li>CIO SMARTCOBY Pro SLIM 35W - モバイルバッテリー / 10000mAh・PD35W・厚さ16mm。参考価格 4,480円</li>
+      <li>Anker MagGo Power Bank (Slim) - モバイルバッテリー / Qi2ワイヤレス15W・MagSafe対応。参考価格 6,990円</li>
+      <li>Anker PowerCore 10000 - モバイルバッテリー / 10000mAh・約180gの軽量定番。参考価格 3,490円</li>
+      <li>Anker 737 Power Bank (PowerCore 24000) - モバイルバッテリー / 24000mAh・最大140W・ノートPC対応。参考価格 11,990円</li>
+    </ul>
+  </div>
+</noscript>
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","name":"Mobina","url":"https://mobina.workers.dev/","description":"持ち歩きガジェット（ワイヤレスイヤホン・モバイルバッテリー）の比較サイト"}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","name":"Mobina","url":"https://mobina.workers.dev/"}
+</script>
+
+<script>
+/* ========================================================================
+   Mobina データ＆ロジック
+   ※PRODUCTS は fetch-products.mjs が PRODUCTS_START〜END を自動置換する。
+   ======================================================================== */
+
+const PRICE_DATE = "2026年6月";
+
+/* PRODUCTS_START — このブロックは fetch-products.mjs が自動生成・置換します。手で編集しないこと */
+/* 実在商品の編集データ（2026年6月時点の参考値）。price は参考価格、image/rating/reviews は
+   fetch-products.mjs を実行すると楽天APIの実データ（実画像・現在価格・レビュー）に置き換わる。 */
+const PRODUCTS = [
+  { id:"ear-anker-liberty4nc", cat:"earphone", brand:"Anker / Soundcore", name:"Soundcore Liberty 4 NC",
+    price:12990, rating:0, reviews:0, weight:5.2, icon:"🎧", image:"", purchase:"#",
+    tags:["ノイキャン","防水","ロングバッテリー"],
+    specs:["ウルトラANC 3.0","LDAC対応(ハイレゾ)","ケース込50h再生","IPX4"],
+    axes:{cospa:86,portability:88,performance:86,usability:84,trust:88} },
+
+  { id:"ear-sony-wf1000xm5", cat:"earphone", brand:"Sony", name:"WF-1000XM5",
+    price:36300, rating:0, reviews:0, weight:5.9, icon:"🎧", image:"", purchase:"#",
+    tags:["ノイキャン","防水"],
+    specs:["業界最高クラスANC","LDAC / LE Audio","ケース込24h(ANC時)","IPX4"],
+    axes:{cospa:60,portability:80,performance:96,usability:86,trust:92} },
+
+  { id:"ear-anker-p40i", cat:"earphone", brand:"Anker / Soundcore", name:"Soundcore P40i",
+    price:7990, rating:0, reviews:0, weight:5.0, icon:"🎧", image:"", purchase:"#",
+    tags:["ノイキャン","防水","ロングバッテリー"],
+    specs:["ウルトラANC 2.0","ケース込60h再生","IPX5","ワイヤレス充電"],
+    axes:{cospa:94,portability:90,performance:72,usability:84,trust:86} },
+
+  { id:"ear-shokz-openfit2", cat:"earphone", brand:"Shokz", name:"OpenFit 2",
+    price:25880, rating:0, reviews:0, weight:9.4, icon:"🎧", image:"", purchase:"#",
+    tags:["防水","ロングバッテリー"],
+    specs:["オープンイヤー(耳を塞がない)","ケース込48h再生","IP55","Bluetooth 5.4"],
+    axes:{cospa:66,portability:70,performance:78,usability:90,trust:84} },
+
+  { id:"bat-anker-fusion30", cat:"battery", brand:"Anker", name:"Power Bank (Fusion, 30W)",
+    price:7990, rating:0, reviews:0, weight:250, icon:"🔋", image:"", purchase:"#",
+    tags:["PD対応"],
+    specs:["10000mAh","PD30W急速","コンセント一体(プラグ内蔵)","USB-Cケーブル一体"],
+    axes:{cospa:84,portability:56,performance:88,usability:96,trust:88} },
+
+  { id:"bat-cio-smartcoby-slim", cat:"battery", brand:"CIO", name:"SMARTCOBY Pro SLIM 35W",
+    price:4480, rating:0, reviews:0, weight:180, icon:"🔋", image:"", purchase:"#",
+    tags:["PD対応","薄型"],
+    specs:["10000mAh","PD35W(PPS対応)","厚さ約16mm","3ポート(C×2/A×1)"],
+    axes:{cospa:90,portability:84,performance:86,usability:84,trust:82} },
+
+  { id:"bat-anker-maggo-slim", cat:"battery", brand:"Anker", name:"MagGo Power Bank (Slim)",
+    price:6990, rating:0, reviews:0, weight:215, icon:"🔋", image:"", purchase:"#",
+    tags:["ワイヤレス充電","PD対応","薄型"],
+    specs:["10000mAh","Qi2 ワイヤレス15W","有線30W入出力","MagSafe対応"],
+    axes:{cospa:76,portability:78,performance:78,usability:90,trust:84} },
+
+  { id:"bat-anker-powercore10000", cat:"battery", brand:"Anker", name:"PowerCore 10000",
+    price:3490, rating:0, reviews:0, weight:180, icon:"🔋", image:"", purchase:"#",
+    tags:["軽量"],
+    specs:["10000mAh","約180gの軽量定番","コンパクト設計","USB-A出力"],
+    axes:{cospa:92,portability:86,performance:58,usability:80,trust:88} },
+
+  { id:"bat-anker-737-24000", cat:"battery", brand:"Anker", name:"737 Power Bank (PowerCore 24000)",
+    price:11990, rating:0, reviews:0, weight:630, icon:"🔋", image:"", purchase:"#",
+    tags:["PD対応","大容量"],
+    specs:["24000mAh","最大140W出力","ノートPC充電対応","残量ディスプレイ搭載"],
+    axes:{cospa:78,portability:30,performance:96,usability:82,trust:86} }
+];
+/* PRODUCTS_END */
+
+/* 軽さスコア：カテゴリ内で正規化 */
+const WEIGHT_RANGE = { earphone:{min:3,max:12}, battery:{min:90,max:600} };
+function portabilityPct(p){
+  const r = WEIGHT_RANGE[p.cat];
+  const pct = 100 - ((p.weight - r.min) / (r.max - r.min)) * 100;
+  return Math.max(8, Math.min(100, pct));
+}
+/* Mobinaスコア（複合：人気×コスパ×中身） */
+function mobinaScore(p){
+  const a = p.axes;
+  return Math.round((a.cospa + a.portability + a.performance + a.usability + a.trust*1.3) / 5.3);
+}
+
+let state = { cat:"all", q:"", sort:"recommend", price:new Set(), tag:new Set() };
+const favs = new Set(JSON.parse(localStorage.getItem("mobina_favs")||"[]"));
+const AXIS_LABELS = {cospa:"コスパ", portability:"携帯性", performance:"性能", usability:"使いやすさ", trust:"信頼性"};
+
+function apply(){
+  let list = PRODUCTS.filter(p=>{
+    if(state.cat!=="all" && p.cat!==state.cat) return false;
+    if(state.q){
+      const hay = (p.name+" "+p.brand+" "+p.tags.join(" ")+" "+p.specs.join(" ")).toLowerCase();
+      if(!hay.includes(state.q.toLowerCase())) return false;
+    }
+    if(state.price.size){
+      const ok = [...state.price].some(b=>
+        b==="u3000"?p.price<3000 : b==="3to8"?(p.price>=3000&&p.price<8000) : p.price>=8000);
+      if(!ok) return false;
+    }
+    if(state.tag.size){
+      const ok = [...state.tag].every(t=> p.tags.includes(t));
+      if(!ok) return false;
+    }
+    return true;
+  });
+  list.sort((a,b)=>{
+    switch(state.sort){
+      case "price-asc": return a.price-b.price;
+      case "price-desc": return b.price-a.price;
+      case "rating": return b.rating-a.rating;
+      case "light": return portabilityPct(b)-portabilityPct(a);
+      default: return mobinaScore(b)-mobinaScore(a);
+    }
+  });
+  return list;
+}
+
+function stars(r){
+  const full=Math.floor(r), half=r-full>=0.5;
+  return "★".repeat(full)+(half?"⯨":"")+"☆".repeat(5-full-(half?1:0));
+}
+function yen(n){return n.toLocaleString("ja-JP")}
+
+function card(p){
+  const isEar = p.cat==="earphone";
+  const catClass = isEar?"ear":"batt";
+  const catLabel = isEar?"◢ AUDIO":"◢ POWER";
+  const wpct = portabilityPct(p);
+  const axesHtml = Object.keys(AXIS_LABELS).map(k=>`
+      <div class="ax"><span class="ax-l">${AXIS_LABELS[k]}</span><span class="ax-t"><i style="width:${p.axes[k]}%"></i></span><span class="ax-v">${p.axes[k]}</span></div>`).join("");
+  const specHtml = p.specs.slice(0,4).map(s=>`<span class="spec">${s}</span>`).join("");
+  const faved = favs.has(p.id);
+  const ratingHtml = p.reviews>0
+    ? `<div class="u-rating"><span class="stars" aria-hidden="true">${stars(p.rating)}</span><span class="num">${p.rating.toFixed(1)}</span><span class="rev">// ${yen(p.reviews)} REVIEWS</span></div>`
+    : `<div class="u-rating awaiting">◇ AWAITING RAKUTEN SYNC</div>`;
+  return `
+  <article class="unit ${catClass}" data-id="${p.id}">
+    <span class="tick tl"></span><span class="tick tr"></span><span class="tick bl"></span><span class="tick br"></span>
+    <div class="u-head">
+      <span class="tag">${catLabel}</span>
+      <button class="fav ${faved?'on':''}" data-fav="${p.id}" aria-label="お気に入り" aria-pressed="${faved}">${faved?'◉':'◌'}</button>
+    </div>
+    <div class="u-thumb">${p.image?`<img src="${p.image}" alt="${p.name}" loading="lazy" style="height:100%;width:auto;object-fit:contain;position:relative;z-index:1">`:p.icon}</div>
+    <div class="u-brand">${p.brand}</div>
+    <div class="u-name">${p.name}</div>
+    ${ratingHtml}
+    <div class="u-mass">
+      <div class="mass-h"><span class="mass-l">MASS / 携帯性</span><span class="mass-v">${p.weight}<i>g</i></span></div>
+      <div class="gauge" aria-hidden="true"><span style="width:${wpct}%"></span></div>
+    </div>
+    <div class="u-axes">${axesHtml}</div>
+    <div class="u-specs">${specHtml}</div>
+    <div class="u-foot">
+      <div class="price"><i>¥</i>${yen(p.price)}<em>${PRICE_DATE}時点</em></div>
+      <a class="acquire" href="${p.purchase}" rel="nofollow sponsored noopener" target="_blank">最安を見る
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <span class="prm">PR</span>
+      </a>
+    </div>
+  </article>`;
+}
+
+function render(){
+  const list = apply();
+  const grid = document.getElementById("grid");
+  document.getElementById("count").textContent = String(list.length).padStart(2,"0");
+  if(!list.length){
+    grid.innerHTML = `<div class="empty"><div class="big">⌗</div><h3>NO UNITS MATCHED</h3><p>条件に合う商品が見つかりませんでした。検索や絞り込みを変えてみてください。</p><button id="reset">RESET // 条件をリセット</button></div>`;
+    document.getElementById("reset").onclick = resetAll;
+    return;
+  }
+  grid.innerHTML = list.map(card).join("");
+  grid.querySelectorAll("[data-fav]").forEach(btn=>{
+    btn.onclick = ()=>{
+      const id = btn.dataset.fav;
+      favs.has(id)?favs.delete(id):favs.add(id);
+      localStorage.setItem("mobina_favs", JSON.stringify([...favs]));
+      render();
+    };
+  });
+}
+
+function resetAll(){
+  state = { cat:"all", q:"", sort:"recommend", price:new Set(), tag:new Set() };
+  document.getElementById("search").value="";
+  document.getElementById("sort").value="recommend";
+  document.querySelectorAll("[data-f]").forEach(c=>c.checked=false);
+  document.querySelectorAll("#catChips .chip").forEach(c=>c.classList.toggle("is-active", c.dataset.cat==="all"));
+  updateFilterBadge();
+  render();
+}
+
+function updateFilterBadge(){
+  const n = state.price.size + state.tag.size;
+  const b = document.getElementById("filterBadge");
+  b.textContent = n; b.style.display = n?"inline-flex":"none";
+}
+
+document.getElementById("search").addEventListener("input", e=>{ state.q=e.target.value; render(); });
+document.getElementById("sort").addEventListener("change", e=>{ state.sort=e.target.value; render(); });
+document.getElementById("catChips").addEventListener("click", e=>{
+  const chip = e.target.closest(".chip"); if(!chip) return;
+  state.cat = chip.dataset.cat;
+  document.querySelectorAll("#catChips .chip").forEach(c=>c.classList.toggle("is-active", c===chip));
+  render();
+});
+document.getElementById("filterToggle").addEventListener("click", ()=>{
+  document.getElementById("filters").classList.toggle("open");
+});
+document.querySelectorAll("[data-f]").forEach(cb=>{
+  cb.addEventListener("change", ()=>{
+    const set = state[cb.dataset.f];
+    cb.checked?set.add(cb.value):set.delete(cb.value);
+    updateFilterBadge(); render();
+  });
+});
+
+document.getElementById("priceDate").textContent = PRICE_DATE;
+render();
+</script>
+</body>
+</html>
