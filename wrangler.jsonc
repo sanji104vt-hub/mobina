@@ -1,0 +1,7 @@
+{
+  // リポジトリのルートに置く。public/index.html を静的配信する設定。
+  // これが無いと「エントリポイントが無い」エラーでビルド失敗する（Moilumで踏んだ罠）。
+  "name": "mobina",
+  "compatibility_date": "2026-06-21",
+  "assets": { "directory": "./public" }
+}
