@@ -409,8 +409,8 @@ const PRODUCTS = [
     axes:{cospa:86,portability:88,performance:86,usability:84,trust:88} },
 
   { id:"ear-sony-wf1000xm5", cat:"earphone", brand:"Sony", name:"WF-1000XM5",
-    price:31800, rating:4.2, reviews:5, weight:5.9, icon:"🎧",
-    image:"https://thumbnail.image.rakuten.co.jp/@0_mall/biccamera/cabinet/product/8218/00000011586515_a01.jpg?_ex=400x400", purchase:"https://hb.afl.rakuten.co.jp/hgc/g00r7ldn.k90d644b.g00r7ldn.k90d7ab6/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbiccamera%2F4548736143531%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fbiccamera%2Fi%2F14181903%2F&rafcid=wsc_i_is_772ff213-0984-4292-9f22-84d9c6c59bfb",
+    price:31800, rating:3.93, reviews:30, weight:5.9, icon:"🎧",
+    image:"https://thumbnail.image.rakuten.co.jp/@0_mall/biccamera/cabinet/product/8218/00000011586514_a01.jpg?_ex=400x400", purchase:"https://hb.afl.rakuten.co.jp/hgc/g00r7ldn.k90d644b.g00r7ldn.k90d7ab6/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbiccamera%2F4548736143470%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fbiccamera%2Fi%2F14181902%2F&rafcid=wsc_i_is_772ff213-0984-4292-9f22-84d9c6c59bfb",
     tags:["ノイキャン","防水"],
     specs:["業界最高クラスANC","LDAC / LE Audio","ケース込24h(ANC時)","IPX4","マルチポイント"],
     axes:{cospa:60,portability:80,performance:96,usability:86,trust:92} },
@@ -429,8 +429,22 @@ const PRODUCTS = [
     specs:["オープンイヤー(耳を塞がない)","ケース込48h再生","IP55","Bluetooth 5.4","物理ボタン操作"],
     axes:{cospa:66,portability:70,performance:78,usability:90,trust:84} },
 
+  { id:"ear-earfun-airpro4", cat:"earphone", brand:"EarFun", name:"Air Pro 4",
+    price:13990, rating:4.5, reviews:6, weight:4.5, icon:"🎧",
+    image:"https://thumbnail.image.rakuten.co.jp/@0_mall/e-earphone/cabinet/earfun/6974173980893-02.jpg?_ex=400x400", purchase:"https://hb.afl.rakuten.co.jp/hgc/g00qjy0n.k90d6344.g00qjy0n.k90d7843/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fe-earphone%2F6974173980893%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fe-earphone%2Fi%2F10039855%2F&rafcid=wsc_i_is_772ff213-0984-4292-9f22-84d9c6c59bfb",
+    tags:["ノイキャン","防水","ロングバッテリー"],
+    specs:["QuietSmart 3.0 ANC(-50dB)","LDAC/aptX Lossless","ケース込52h再生","IPX5","ワイヤレス充電"],
+    axes:{cospa:96,portability:88,performance:82,usability:82,trust:80} },
+
+  { id:"ear-soundpeats-air4pro", cat:"earphone", brand:"SOUNDPEATS", name:"Air4 Pro",
+    price:8480, rating:4.45, reviews:287, weight:4.7, icon:"🎧",
+    image:"https://thumbnail.image.rakuten.co.jp/@0_mall/sonic-store/cabinet/soundpeats/air4pro/0-6.jpg?_ex=400x400", purchase:"https://hb.afl.rakuten.co.jp/hgc/g00u7fcn.k90d620d.g00u7fcn.k90d7c0e/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fsonic-store%2Fair4pro%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fsonic-store%2Fi%2F10000193%2F&rafcid=wsc_i_is_772ff213-0984-4292-9f22-84d9c6c59bfb",
+    tags:["ノイキャン","防水"],
+    specs:["アダプティブANC(-45dB)","aptX Lossless/Snapdragon Sound","ケース込26h再生","マルチポイント"],
+    axes:{cospa:98,portability:90,performance:76,usability:80,trust:76} },
+
   { id:"bat-anker-fusion30", cat:"battery", brand:"Anker", name:"Power Bank (Fusion, 30W)",
-    price:7990, rating:4.58, reviews:1280, weight:250, icon:"🔋",
+    price:7990, rating:4.58, reviews:1281, weight:250, icon:"🔋",
     image:"https://thumbnail.image.rakuten.co.jp/@0_mall/anker/cabinet/images/anker_2/a1637_normal.jpg?_ex=400x400", purchase:"https://hb.afl.rakuten.co.jp/hgc/g00rr09n.k90d647f.g00rr09n.k90d70c4/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fanker%2Fa1637%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fanker%2Fi%2F10001959%2F&rafcid=wsc_i_is_772ff213-0984-4292-9f22-84d9c6c59bfb",
     tags:["PD対応"],
     specs:["10000mAh","PD30W急速","コンセント一体(プラグ内蔵)","USB-Cケーブル一体","PSE適合"],
@@ -443,12 +457,12 @@ const PRODUCTS = [
     specs:["10000mAh","PD35W(PPS対応)","厚さ約16mm","3ポート(C×2/A×1)","パススルー対応"],
     axes:{cospa:90,portability:84,performance:86,usability:84,trust:82} },
 
-  { id:"bat-anker-maggo-slim", cat:"battery", brand:"Anker", name:"MagGo Power Bank (Slim)",
-    price:6490, rating:4.55, reviews:498, weight:215, icon:"🔋",
-    image:"https://thumbnail.image.rakuten.co.jp/@0_mall/anker/cabinet/deal/202606m2/a1664_sale.jpg?_ex=400x400", purchase:"https://hb.afl.rakuten.co.jp/hgc/g00rr09n.k90d647f.g00rr09n.k90d70c4/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fanker%2Fa1664%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fanker%2Fi%2F10002086%2F&rafcid=wsc_i_is_772ff213-0984-4292-9f22-84d9c6c59bfb",
-    tags:["ワイヤレス充電","PD対応","薄型"],
-    specs:["10000mAh","Qi2 ワイヤレス15W","有線30W入出力","厚さ約15mm","MagSafe対応"],
-    axes:{cospa:76,portability:78,performance:78,usability:90,trust:84} },
+  { id:"bat-anker-nano-maggo-slim", cat:"battery", brand:"Anker", name:"Nano Power Bank (5000mAh, MagGo, Slim)",
+    price:6990, rating:4.51, reviews:138, weight:110, icon:"🔋",
+    image:"https://thumbnail.image.rakuten.co.jp/@0_mall/anker/cabinet/listing/tmb/a1665/a1665_normal_v6.jpg?_ex=400x400", purchase:"https://hb.afl.rakuten.co.jp/hgc/g00rr09n.k90d647f.g00rr09n.k90d70c4/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fanker%2Fa1665%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fanker%2Fi%2F10002418%2F&rafcid=wsc_i_is_772ff213-0984-4292-9f22-84d9c6c59bfb",
+    tags:["ワイヤレス充電","軽量","薄型"],
+    specs:["5000mAh","Qi2 ワイヤレス15W","厚さ約8.6mm(史上最薄)","MagSafe対応","有線20W入出力"],
+    axes:{cospa:80,portability:96,performance:70,usability:90,trust:86} },
 
   { id:"bat-anker-powercore10000", cat:"battery", brand:"Anker", name:"PowerCore 10000",
     price:5990, rating:4.31, reviews:834, weight:180, icon:"🔋",
@@ -462,7 +476,14 @@ const PRODUCTS = [
     image:"https://thumbnail.image.rakuten.co.jp/@0_mall/anker/cabinet/a1289.jpg?_ex=400x400", purchase:"https://hb.afl.rakuten.co.jp/hgc/g00rr09n.k90d647f.g00rr09n.k90d70c4/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fanker%2Fa1289%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Fanker%2Fi%2F10001221%2F&rafcid=wsc_i_is_772ff213-0984-4292-9f22-84d9c6c59bfb",
     tags:["PD対応","大容量"],
     specs:["24000mAh","最大140W出力","ノートPC充電対応","残量ディスプレイ搭載","3ポート"],
-    axes:{cospa:78,portability:30,performance:96,usability:82,trust:86} }
+    axes:{cospa:78,portability:30,performance:96,usability:82,trust:86} },
+
+  { id:"bat-elecom-de-c86-10000", cat:"battery", brand:"ELECOM", name:"半固体モバイルバッテリー DE-C86-10000BK",
+    price:8480, rating:5, reviews:2, weight:220, icon:"🔋",
+    image:"https://thumbnail.image.rakuten.co.jp/@0_mall/elecom/cabinet/s500_31/de-c86-10000bu_03r.jpg?_ex=400x400", purchase:"https://hb.afl.rakuten.co.jp/hgc/g00pkoxn.k90d69b5.g00pkoxn.k90d7de2/?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Felecom%2F4549550417402%2F&m=http%3A%2F%2Fm.rakuten.co.jp%2Felecom%2Fi%2F10070358%2F&rafcid=wsc_i_is_772ff213-0984-4292-9f22-84d9c6c59bfb",
+    tags:["PD対応","半固体電池"],
+    specs:["10000mAh","半固体電池(高安全・長寿命)","最大35W出力","USB-C×2/A×1","約2000回使用可"],
+    axes:{cospa:72,portability:74,performance:78,usability:86,trust:84} }
 ];
 /* PRODUCTS_END */
 

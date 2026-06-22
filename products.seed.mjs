@@ -48,6 +48,25 @@ export default [
     axes: { cospa: 66, portability: 70, performance: 78, usability: 90, trust: 84 },
     rakutenKeyword: "Shokz OpenFit2",
   },
+  {
+    id: "ear-earfun-airpro4", cat: "earphone",
+    brand: "EarFun", name: "Air Pro 4",
+    weight: 4.5, icon: "🎧",
+    tags: ["ノイキャン", "防水", "ロングバッテリー"],
+    specs: ["QuietSmart 3.0 ANC(-50dB)", "LDAC/aptX Lossless", "ケース込52h再生", "IPX5", "ワイヤレス充電"],
+    axes: { cospa: 96, portability: 88, performance: 82, usability: 82, trust: 80 },
+    rakutenKeyword: "EarFun Air Pro4 完全ワイヤレスイヤホン",
+  },
+
+  {
+    id: "ear-soundpeats-air4pro", cat: "earphone",
+    brand: "SOUNDPEATS", name: "Air4 Pro",
+    weight: 4.7, icon: "🎧",
+    tags: ["ノイキャン", "防水"],
+    specs: ["アダプティブANC(-45dB)", "aptX Lossless/Snapdragon Sound", "ケース込26h再生", "マルチポイント"],
+    axes: { cospa: 98, portability: 90, performance: 76, usability: 80, trust: 76 },
+    rakutenKeyword: "SOUNDPEATS Air4 Pro",
+  },
 
   /* ============ モバイルバッテリー / 充電器 ============ */
   {
@@ -69,13 +88,13 @@ export default [
     rakutenKeyword: "CIO SMARTCOBY Pro SLIM 35W 10000mAh",
   },
   {
-    id: "bat-anker-maggo-slim", cat: "battery",
-    brand: "Anker", name: "MagGo Power Bank (Slim)",
-    weight: 215, icon: "🔋",   /* ★重量は要確認（公称ベースの参考値） */
-    tags: ["ワイヤレス充電", "PD対応", "薄型"],
-    specs: ["10000mAh", "Qi2 ワイヤレス15W", "有線30W入出力", "厚さ約15mm", "MagSafe対応"],
-    axes: { cospa: 76, portability: 78, performance: 78, usability: 90, trust: 84 },
-    rakutenKeyword: "Anker MagGo Power Bank 10000mAh Slim",
+    id: "bat-anker-nano-maggo-slim", cat: "battery",
+    brand: "Anker", name: "Nano Power Bank (5000mAh, MagGo, Slim)",
+    weight: 110, icon: "🔋",
+    tags: ["ワイヤレス充電", "軽量", "薄型"],
+    specs: ["5000mAh", "Qi2 ワイヤレス15W", "厚さ約8.6mm(史上最薄)", "MagSafe対応", "有線20W入出力"],
+    axes: { cospa: 80, portability: 96, performance: 70, usability: 90, trust: 86 },
+    rakutenKeyword: "Anker Nano Power Bank 5000mAh MagGo Slim",
   },
   {
     id: "bat-anker-powercore10000", cat: "battery",
@@ -94,5 +113,14 @@ export default [
     specs: ["24000mAh", "最大140W出力", "ノートPC充電対応", "残量ディスプレイ搭載", "3ポート"],
     axes: { cospa: 78, portability: 30, performance: 96, usability: 82, trust: 86 },
     rakutenKeyword: "Anker 737 Power Bank PowerCore 24000",
+  },
+  {
+    id: "bat-elecom-de-c86-10000", cat: "battery",
+    brand: "ELECOM", name: "半固体モバイルバッテリー DE-C86-10000BK",
+    weight: 220, icon: "🔋",   /* 公式仕様: 約220g（10000mAh/35W版） */
+    tags: ["PD対応", "半固体電池"],
+    specs: ["10000mAh", "半固体電池(高安全・長寿命)", "最大35W出力", "USB-C×2/A×1", "約2000回使用可"],
+    axes: { cospa: 72, portability: 74, performance: 78, usability: 86, trust: 84 },
+    rakutenKeyword: "エレコム 半固体モバイルバッテリー 10000mAh 35W",
   },
 ];
