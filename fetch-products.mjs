@@ -154,11 +154,11 @@ async function buildCurated(){
         image: upscale(it.mediumImageUrls?.[0]?.imageUrl||""), purchase: it.affiliateUrl||it.itemUrl||"#",
       } : { price:null, rating:0, reviews:0, image:"", purchase:"#" };
       out.push({ id:e.id, cat:e.cat, brand:e.brand, name:e.name, ...dyn,
-        weight:e.weight, icon:e.icon, tags:e.tags, specs:e.specs, axes:e.axes });
+        weight:e.weight, icon:e.icon, tags:e.tags, specs:e.specs, axes:e.axes, pick:e.pick });
       console.log(`  ★ ${e.id.padEnd(26)} ¥${dyn.price}`);
     }catch(err){ console.warn(`  ⚠ ${e.id}: ${err.message}`); 
       out.push({ id:e.id, cat:e.cat, brand:e.brand, name:e.name, price:null, rating:0, reviews:0,
-        image:"", purchase:"#", weight:e.weight, icon:e.icon, tags:e.tags, specs:e.specs, axes:e.axes }); }
+        image:"", purchase:"#", weight:e.weight, icon:e.icon, tags:e.tags, specs:e.specs, axes:e.axes, pick:e.pick }); }
     await sleep(1100);
   }
   return out;
@@ -200,12 +200,16 @@ async function buildAuto(curatedCodes){
       const weight = cat==="battery" ? parseNum(fullText, /(?:重量|約)\s*([0-9]{2,4})\s*g/) : null;
       const mAh = parseNum(fullText, /([0-9]{4,6})\s*mAh/i);
       const specList = (mAh && cat==="battery") ? [`${mAh}mAh`, ...specs] : specs;
+      const pick = [];
+      if(reviews>=100 && rating>=4.3) pick.push(`楽天★${rating}・${reviews}件と評価が安定`);
+      else pick.push(`楽天★${rating}（${reviews}件）`);
+      if(specs.length) pick.push(`${specs.slice(0,2).join("・")}に対応`);
       return {
         id:`auto-${cat}-${it.itemCode.replace(/[^a-zA-Z0-9]/g,"-")}`.slice(0,60),
         cat, brand:detectBrand(it.itemName, it.shopName), name:cleanName(it.itemName),
         price, rating, reviews, weight,
         image:upscale(it.mediumImageUrls[0].imageUrl), purchase:it.affiliateUrl||it.itemUrl||"#",
-        tags, specs:specList.slice(0,5), cospa, trust,
+        tags, specs:specList.slice(0,5), cospa, trust, pick,
       };
     });
     products.sort((a,b)=> ((b.cospa+b.trust)/2) - ((a.cospa+a.trust)/2));
