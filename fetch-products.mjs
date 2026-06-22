@@ -1,158 +1,246 @@
 /* ============================================================
-   Mobina  fetch-products.mjs
-   楽天市場 商品検索API から「画像URL・価格・レビュー平均/件数・アフィリンク」を取得し、
-   products.seed.mjs の編集データと合体 → public/index.html の PRODUCTS ブロックを差分置換する。
+   Mobina  fetch-products.mjs  —  カタログ生成版
+   ------------------------------------------------------------
+   ① 手作りシード(products.seed.mjs)= 編集部おすすめ（5軸フル・上位固定）
+   ② 各カテゴリをキーワードで楽天から一括取得 → 重複/アクセサリ除外
+      → 価格・評価・レビュー数からスコアを自動算出 → 上位を採用（長い在庫）
+   ①+② を結合して public/index.html の PRODUCTS を差分置換する。
 
-   使い方（PCのターミナル / Claude Code で）：
-     1) Node 18 以上が必要（global fetch を使用）
-     2) 楽天アプリID・アフィリエイトIDを環境変数で渡す（公開リポジトリにIDを直書き・コミットしない！）
-        Windows PowerShell:
-          $env:RAKUTEN_APP_ID="あなたのアプリID"
-          $env:RAKUTEN_AFFILIATE_ID="あなたのアフィリエイトID"
-          node fetch-products.mjs
-        Mac/Linux:
-          RAKUTEN_APP_ID=xxx RAKUTEN_AFFILIATE_ID=yyy node fetch-products.mjs
-     3) public/index.html の PRODUCTS_START〜PRODUCTS_END だけが書き換わる（他は触らない）
-
-   ※楽天APIは概ね「1秒1リクエスト」制限。間に待ち時間を入れている。
+   使い方（Node 18+ / PowerShell）:
+     $env:RAKUTEN_APP_ID="..."; $env:RAKUTEN_REFERER="https://mobina.sanji-104vt.workers.dev/";
+     $env:RAKUTEN_AFFILIATE_ID="..."; node fetch-products.mjs
    ============================================================ */
 
 import { readFile, writeFile } from "node:fs/promises";
 import seed from "./products.seed.mjs";
 
 const APP_ID = process.env.RAKUTEN_APP_ID;
-const ACCESS_KEY = process.env.RAKUTEN_ACCESS_KEY || "";   // 2026新仕様: pk_... のアクセスキー（必須）
 const AFFILIATE_ID = process.env.RAKUTEN_AFFILIATE_ID || "";
-const REFERER = process.env.RAKUTEN_REFERER || "";          // アプリに登録した許可ドメイン（403回避に必須）
-const INDEX_PATH = "./public/index.html";   // リポジトリ構成に合わせて調整
-// 2026年新仕様エンドポイント（旧 app.rakuten.co.jp は 2026-05-13 に停止）
-const API = "https://openapi.rakuten.co.jp/ichibams/api/IchibaItem/Search/20220601";
+const REFERER = (process.env.RAKUTEN_REFERER || "").trim();
+const ACCESS_KEY = (process.env.RAKUTEN_ACCESS_KEY || "").trim();
+const INDEX_PATH = "./public/index.html";
+const API = "https://openapi.rakuten.co.jp/ichibams/api/IchibaItem/Search/20220601";  // 2026新仕様（旧 app.rakuten.co.jp は停止）
 
-if (!APP_ID) {
-  console.error("✕ RAKUTEN_APP_ID が未設定です。環境変数で渡してください。");
-  process.exit(1);
-}
-if (!ACCESS_KEY) {
-  console.error("✕ RAKUTEN_ACCESS_KEY が未設定です。新仕様では accessKey が必須です。");
-  process.exit(1);
-}
-if (!REFERER) {
-  console.error("✕ RAKUTEN_REFERER が未設定です。アプリ登録済みの許可ドメインを指定してください（例: https://mobina.workers.dev/）。");
-  process.exit(1);
-}
+if (!APP_ID) { console.error("✕ RAKUTEN_APP_ID が未設定です。"); process.exit(1); }
+if (!REFERER) console.warn("⚠ RAKUTEN_REFERER 未設定（Web appタイプだと弾かれます）");
+
+/* ===== 量産設定：カテゴリごとの取得キーワードと目標件数 ===== */
+const CATALOG = {
+  earphone: {
+    target: 50,
+    keywords: [
+      "ワイヤレスイヤホン ノイズキャンセリング", "完全ワイヤレスイヤホン", "ワイヤレスイヤホン 軽量",
+      "オープンイヤー イヤホン", "骨伝導イヤホン", "ワイヤレスイヤホン LDAC",
+      "ワイヤレスイヤホン 防水 スポーツ", "ワイヤレスイヤホン マルチポイント",
+    ],
+  },
+  battery: {
+    target: 50,
+    keywords: [
+      "モバイルバッテリー 10000mAh", "モバイルバッテリー 20000mAh", "モバイルバッテリー 軽量 小型",
+      "モバイルバッテリー MagSafe ワイヤレス", "モバイルバッテリー ケーブル内蔵",
+      "モバイルバッテリー コンセント一体", "モバイルバッテリー PD 急速充電", "モバイルバッテリー 大容量",
+    ],
+  },
+  smarttag: {
+    target: 25,
+    keywords: [
+      "スマートタグ 紛失防止", "忘れ物防止 タグ", "紛失防止 トラッカー Bluetooth",
+      "スマートトラッカー", "落とし物 防止 タグ", "MagSafe スマートタグ",
+    ],
+  },
+};
+
+/* 価格レンジ（この外はバンドル/部品とみなして除外） */
+const PRICE_RANGE = {
+  earphone: [1200, 80000], battery: [800, 30000], smarttag: [500, 15000],
+};
+/* アクセサリ等の除外ワード */
+const EXCLUDE = {
+  earphone: /ケース|カバー|イヤーピース|イヤーフック|イヤーパッド|交換用|互換|フィルム|保護|ストラップ|収納|ホルダー|シール|変換|分配|片耳のみ|抗菌/,
+  battery: /ケース|カバー|フィルム|保護|交換用|互換|スタンド|ホルダー|収納|変換|シール|ステッカー|単体|ポーチ/,
+  smarttag: /ケース|カバー|ホルダー|キーホルダー|フィルム|保護|交換用|互換|バンド|ストラップ|シリコン|アクセサリ|ボタン電池|電池\s*単体|3個|4個/,
+};
+const MIN_REVIEWS = 3;
+
+const BRANDS = ["Anker","Soundcore","SOUNDPEATS","EarFun","Sony","ソニー","Shokz","JBL","Jabra","Bose","BOSE",
+  "final","Victor","JVC","audio-technica","オーディオテクニカ","Nothing","CIO","ELECOM","エレコム","cheero",
+  "UGREEN","Belkin","AUKEY","Apple","Tile","MAMORIO","Beats","Technics","ag","NUARL","ambie","HUAWEI","Google",
+  "Samsung","BUFFALO","ナカバヤシ","オウルテック","MOTTERU","RORRY","Baseus"];
+
+/* 機能検出（タグ＝絞り込み用 / spec＝カードのチップ） */
+const FEATURES = {
+  earphone: [
+    {re:/ノイズキャンセ|ノイキャン|\bANC\b/i, tag:"ノイキャン", spec:"ノイズキャンセリング"},
+    {re:/防水|IPX?\d/i, tag:"防水", spec:"防水対応"},
+    {re:/最大\s*\d{2,3}\s*時間|ロング|長時間/i, tag:"ロングバッテリー", spec:"ロング再生"},
+    {re:/LDAC/i, spec:"LDAC対応"},
+    {re:/aptX/i, spec:"aptX対応"},
+    {re:/骨伝導/i, spec:"骨伝導"},
+    {re:/オープンイヤー|空気伝導|耳をふさが|ながら聴き/i, spec:"オープンイヤー"},
+    {re:/マルチポイント/i, spec:"マルチポイント"},
+    {re:/ワイヤレス充電|\bQi\b/i, spec:"ワイヤレス充電"},
+    {re:/ハイレゾ/i, spec:"ハイレゾ"},
+  ],
+  battery: [
+    {re:/\bPD\b|Power\s?Delivery|急速/i, tag:"PD対応", spec:"PD急速充電"},
+    {re:/MagSafe|マグセーフ|マグネット.*ワイヤレス|\bQi2?\b/i, tag:"ワイヤレス充電", spec:"ワイヤレス充電"},
+    {re:/2\s?0000mAh|2\s?5000mAh|3\s?0000mAh|大容量/i, tag:"大容量", spec:"大容量"},
+    {re:/薄型|スリム|slim/i, tag:"薄型", spec:"薄型"},
+    {re:/軽量/i, tag:"軽量", spec:"軽量"},
+    {re:/ケーブル内蔵|一体|内蔵ケーブル/i, spec:"ケーブル内蔵"},
+    {re:/コンセント|プラグ内蔵|AC一体/i, spec:"コンセント一体"},
+    {re:/PSE/i, spec:"PSE適合"},
+  ],
+  smarttag: [
+    {re:/MagSafe|マグネット/i, spec:"MagSafe対応"},
+    {re:/防水|IP\d/i, tag:"防水", spec:"防水対応"},
+    {re:/電池交換|交換式電池|コイン電池|CR20\d\d/i, spec:"電池交換可"},
+    {re:/iPhone|探す|Find\s?My|Apple査探/i, spec:"探すアプリ対応"},
+    {re:/Android|Google/i, spec:"Android対応"},
+    {re:/防水|IPX?\d/i, spec:"防水"},
+    {re:/音|アラーム|ブザー/i, spec:"アラーム"},
+  ],
+};
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const upscale = (u) => u ? u.replace(/\?_ex=\d+x\d+$/, "?_ex=400x400") : "";
+const clampPct = (v) => Math.max(5, Math.min(100, Math.round(v)));
 
-/* 画像URLを大きめサイズに（楽天は ?_ex=128x128 が付く） */
-function upscaleImage(url) {
-  if (!url) return "";
-  return url.replace(/\?_ex=\d+x\d+$/, "?_ex=400x400");
+function cleanName(s){
+  return (s||"")
+    .replace(/【[^】]*】/g,"").replace(/\[[^\]]*\]/g,"")
+    .replace(/送料無料|ポイント\s?\d+倍?|あす楽|楽天\s?\d*位|国内発送|正規品|新品未使用|新品|セール|期間限定|限定|お買い物マラソン|SALE|公式|即納/gi,"")
+    .replace(/\s+/g," ").trim().slice(0,48);
+}
+function detectBrand(name, shop){
+  const hit = BRANDS.find(b => new RegExp(b.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),"i").test(name));
+  if(hit) return hit==="ソニー"?"Sony":hit==="エレコム"?"ELECOM":hit==="オーディオテクニカ"?"audio-technica":hit;
+  return cleanName(shop).slice(0,16) || "—";
+}
+function parseNum(text, re){ const m=(text||"").match(re); return m?Number(m[1]):null; }
+function detect(cat, text){
+  const tags=new Set(), specs=[];
+  for(const f of (FEATURES[cat]||[])){
+    if(f.re.test(text)){ if(f.tag) tags.add(f.tag); if(f.spec && !specs.includes(f.spec)) specs.push(f.spec); }
+  }
+  return { tags:[...tags], specs };
 }
 
-/* 楽天APIで1商品ぶん取得 */
-async function fetchOne(entry) {
+/* 楽天検索（1キーワード） */
+async function search(keyword, hits){
   const params = new URLSearchParams({
-    applicationId: APP_ID,
-    accessKey: ACCESS_KEY,   // 2026新仕様: クエリで accessKey も渡す
-    format: "json",
-    hits: "5",
-    imageFlag: "1",          // 画像ありのみ
-    sort: "-reviewCount",    // レビュー数の多い順（=定番が上に来やすい）
+    applicationId: APP_ID, format:"json", hits:String(hits), imageFlag:"1", sort:"-reviewCount", keyword,
   });
   if (AFFILIATE_ID) params.set("affiliateId", AFFILIATE_ID);
-  if (entry.itemCode) params.set("itemCode", entry.itemCode);
-  else params.set("keyword", entry.rakutenKeyword || entry.name);
-
-  // 登録済み許可ドメインと一致が必須（不一致だと 403 HTTP_REFERRER_NOT_ALLOWED）。
-  // 新APIは Origin を見て判定するため Referer / Origin の両方を送る。
-  const origin = (() => { try { return new URL(REFERER).origin; } catch { return REFERER; } })();
-  const res = await fetch(`${API}?${params}`, { headers: { Referer: REFERER, Origin: origin } });
-  if (!res.ok) throw new Error(`HTTP ${res.status} (${entry.id})`);
+  if (ACCESS_KEY) params.set("accessKey", ACCESS_KEY);
+  const headers = {};
+  if (REFERER){ headers["Referer"]=REFERER; try{ headers["Origin"]=new URL(REFERER).origin; }catch(_){} }
+  const res = await fetch(`${API}?${params}`, { headers });
+  if(!res.ok) throw new Error(`HTTP ${res.status}`);
   const data = await res.json();
-  const item = data?.Items?.[0]?.Item;
-  if (!item) return null;
-
-  const img = upscaleImage(item.mediumImageUrls?.[0]?.imageUrl || "");
-  return {
-    merge: {   // ← これだけ PRODUCTS に合体（編集データ name/specs等は上書きしない）
-      price: item.itemPrice ?? null,
-      image: img,
-      rating: Number(item.reviewAverage) || 0,
-      reviews: Number(item.reviewCount) || 0,
-      purchase: item.affiliateUrl || item.itemUrl || "#",
-    },
-    matchedName: item.itemName || "",   // 検証用（楽天側の商品名）
-    shop: item.shopName || "",
-    url: item.itemUrl || "",
-  };
+  return (data.Items||[]).map(x=>x.Item);
 }
 
-/* PRODUCTS 配列を綺麗な JS 文字列に整形 */
-function toProductsLiteral(products) {
-  const lines = products.map((p) => {
-    const tags = JSON.stringify(p.tags);
-    const specs = JSON.stringify(p.specs);
-    const axes = `{cospa:${p.axes.cospa},portability:${p.axes.portability},performance:${p.axes.performance},usability:${p.axes.usability},trust:${p.axes.trust}}`;
-    return `  { id:${JSON.stringify(p.id)}, cat:${JSON.stringify(p.cat)}, brand:${JSON.stringify(p.brand)}, name:${JSON.stringify(p.name)},\n` +
-           `    price:${p.price}, rating:${p.rating}, reviews:${p.reviews}, weight:${p.weight}, icon:${JSON.stringify(p.icon)},\n` +
-           `    image:${JSON.stringify(p.image)}, purchase:${JSON.stringify(p.purchase)},\n` +
-           `    tags:${tags},\n` +
-           `    specs:${specs},\n` +
-           `    axes:${axes} }`;
-  });
-  return "const PRODUCTS = [\n" + lines.join(",\n\n") + "\n];";
+/* ===== 編集部おすすめ（seed）= 動的データだけ取得して合体 ===== */
+async function buildCurated(){
+  const out=[];
+  for(const e of seed){
+    try{
+      const items = await search(e.rakutenKeyword || e.name, 3);
+      const it = items[0];
+      const dyn = it ? {
+        price: it.itemPrice ?? null, rating: Number(it.reviewAverage)||0, reviews: Number(it.reviewCount)||0,
+        image: upscale(it.mediumImageUrls?.[0]?.imageUrl||""), purchase: it.affiliateUrl||it.itemUrl||"#",
+      } : { price:null, rating:0, reviews:0, image:"", purchase:"#" };
+      out.push({ id:e.id, cat:e.cat, brand:e.brand, name:e.name, ...dyn,
+        weight:e.weight, icon:e.icon, tags:e.tags, specs:e.specs, axes:e.axes });
+      console.log(`  ★ ${e.id.padEnd(26)} ¥${dyn.price}`);
+    }catch(err){ console.warn(`  ⚠ ${e.id}: ${err.message}`); 
+      out.push({ id:e.id, cat:e.cat, brand:e.brand, name:e.name, price:null, rating:0, reviews:0,
+        image:"", purchase:"#", weight:e.weight, icon:e.icon, tags:e.tags, specs:e.specs, axes:e.axes }); }
+    await sleep(1100);
+  }
+  return out;
 }
 
-async function main() {
-  console.log(`▶ ${seed.length} 件をシードから処理します\n`);
-  const products = [];
-  const report = [];
-
-  for (const entry of seed) {
-    try {
-      const dyn = await fetchOne(entry);
-      if (!dyn) {
-        console.warn(`  ⚠ 見つからず（編集データのみ採用）: ${entry.id}`);
-        products.push({ ...entry, price: null, rating: 0, reviews: 0, image: "", purchase: "#" });
-        report.push(`✗ ${entry.id}\n    楽天で該当なし → rakutenKeyword か itemCode を見直し`);
-      } else {
-        const m = dyn.merge;
-        console.log(`  ✓ ${entry.id.padEnd(26)} ¥${String(m.price).padStart(6)}  ★${m.rating}(${m.reviews})  ${m.image ? "IMG" : "no-img"}`);
-        console.log(`     ↳ 楽天ヒット: ${dyn.matchedName.slice(0, 54)}`);
-        products.push({ ...entry, ...m });
-        report.push(`✓ ${entry.id}  →  表示名: ${entry.name}\n    楽天ヒット: ${dyn.matchedName}\n    ¥${m.price} / ★${m.rating}(${m.reviews}件) / ${dyn.shop}\n    ${dyn.url}`);
-      }
-    } catch (e) {
-      console.warn(`  ⚠ 取得失敗（編集データのみ採用）: ${entry.id} — ${e.message}`);
-      products.push({ ...entry, price: null, rating: 0, reviews: 0, image: "", purchase: "#" });
-      report.push(`✗ ${entry.id}\n    取得失敗: ${e.message}`);
+/* ===== 自動取得（カテゴリ別キーワード一括） ===== */
+async function buildAuto(curatedCodes){
+  const result={};
+  for(const [cat,cfg] of Object.entries(CATALOG)){
+    const seen=new Set(curatedCodes), raw=[];
+    for(const kw of cfg.keywords){
+      try{
+        const items = await search(kw, 30);
+        for(const it of items){
+          const code = it.itemCode;
+          if(!code || seen.has(code)) continue;
+          const name = it.itemName||"";
+          if(EXCLUDE[cat].test(name)) continue;
+          const price = it.itemPrice||0, reviews = Number(it.reviewCount)||0;
+          const [lo,hi]=PRICE_RANGE[cat];
+          if(price<lo || price>hi || reviews<MIN_REVIEWS) continue;
+          if(!it.mediumImageUrls?.[0]?.imageUrl) continue;
+          seen.add(code); raw.push(it);
+        }
+        console.log(`  [${cat}] "${kw}" → 累計 ${raw.length}`);
+      }catch(err){ console.warn(`  ⚠ [${cat}] "${kw}": ${err.message}`); }
+      await sleep(1100);
     }
-    await sleep(1100); // レート制限対策
+    // 価格レンジ（cospa算出用）
+    const prices = raw.map(it=>it.itemPrice).sort((a,b)=>a-b);
+    const pMin = prices[0]||0, pMax = prices[prices.length-1]||1;
+    const products = raw.map(it=>{
+      const fullText = `${it.itemName} ${it.itemCaption||""}`;
+      const rating = Number(it.reviewAverage)||0, reviews = Number(it.reviewCount)||0, price = it.itemPrice;
+      const trust = clampPct((rating/5)*60 + Math.min(40, (Math.log10(reviews+1)/4)*40));
+      const cheap = pMax>pMin ? 1-((price-pMin)/(pMax-pMin)) : 0.5;
+      const cospa = clampPct((rating/5)*55 + cheap*45);
+      const { tags, specs } = detect(cat, fullText);
+      const weight = cat==="battery" ? parseNum(fullText, /(?:重量|約)\s*([0-9]{2,4})\s*g/) : null;
+      const mAh = parseNum(fullText, /([0-9]{4,6})\s*mAh/i);
+      const specList = (mAh && cat==="battery") ? [`${mAh}mAh`, ...specs] : specs;
+      return {
+        id:`auto-${cat}-${it.itemCode.replace(/[^a-zA-Z0-9]/g,"-")}`.slice(0,60),
+        cat, brand:detectBrand(it.itemName, it.shopName), name:cleanName(it.itemName),
+        price, rating, reviews, weight,
+        image:upscale(it.mediumImageUrls[0].imageUrl), purchase:it.affiliateUrl||it.itemUrl||"#",
+        tags, specs:specList.slice(0,5), cospa, trust,
+      };
+    });
+    products.sort((a,b)=> ((b.cospa+b.trust)/2) - ((a.cospa+a.trust)/2));
+    result[cat] = products.slice(0, cfg.target);
+    console.log(`  ✓ [${cat}] 採用 ${result[cat].length}/${cfg.target}`);
   }
+  return result;
+}
 
-  // index.html の PRODUCTS ブロックだけ置換（マーカー間のみ＝他は一切触らない）
-  const html = await readFile(INDEX_PATH, "utf8");
+async function main(){
+  console.log("▶ 編集部おすすめ（seed）取得…");
+  const curated = await buildCurated();
+  const curatedCodes = new Set(); // seedはitemCode未指定なので重複は名前ベースで自然回避
+  console.log("\n▶ 自動カタログ取得…");
+  const auto = await buildAuto(curatedCodes);
+
+  // 並び：編集部おすすめ → 各カテゴリの自動取得
+  const products = [...curated];
+  for(const cat of Object.keys(CATALOG)) products.push(...(auto[cat]||[]));
+
+  const literal = "const PRODUCTS = [\n" + products.map(p=>"  "+JSON.stringify(p)).join(",\n") + "\n];";
+  const html = await readFile(INDEX_PATH,"utf8");
   const re = /\/\* PRODUCTS_START[\s\S]*?\*\/[\s\S]*?\/\* PRODUCTS_END \*\//;
-  if (!re.test(html)) {
-    console.error("✕ index.html に PRODUCTS_START / PRODUCTS_END マーカーが見つかりません。");
-    process.exit(1);
-  }
-  const block =
-    "/* PRODUCTS_START — このブロックは fetch-products.mjs が自動生成・置換します。手で編集しないこと */\n" +
-    toProductsLiteral(products) +
-    "\n/* PRODUCTS_END */";
-
+  if(!re.test(html)){ console.error("✕ マーカーが見つかりません"); process.exit(1); }
+  const block = "/* PRODUCTS_START — fetch-products.mjs が自動生成。手で編集しない */\n"+literal+"\n/* PRODUCTS_END */";
   await writeFile(INDEX_PATH, html.replace(re, block), "utf8");
 
-  // 検証レポート（楽天ヒット商品が正しいか目視確認用。コミット不要なので .gitignore 推奨）
+  const counts = Object.fromEntries(Object.keys(CATALOG).map(c=>[c,(auto[c]||[]).length]));
   await writeFile("./fetch-report.txt",
-    "Mobina 取得レポート  " + new Date().toLocaleString("ja-JP") + "\n" +
-    "（各商品で「楽天ヒット」が狙った商品と一致しているか確認。ズレていたら seed の itemCode を指定）\n\n" +
-    report.join("\n\n") + "\n", "utf8");
+    `Mobina カタログ生成 ${new Date().toLocaleString("ja-JP")}\n\n`+
+    `編集部おすすめ: ${curated.length}件\n`+
+    Object.entries(counts).map(([c,n])=>`自動[${c}]: ${n}件`).join("\n")+
+    `\n\n合計: ${products.length}件\n`, "utf8");
 
-  console.log(`\n✅ ${INDEX_PATH} の PRODUCTS を更新しました（${products.length}件）`);
-  console.log("📝 fetch-report.txt を出力（楽天ヒット商品が正しいか目視確認）");
-  console.log("   → Ctrl+Shift+R で表示確認。問題なければ git add/commit/push。");
+  console.log(`\n✅ PRODUCTS 更新: 合計 ${products.length}件（編集部${curated.length} + 自動${Object.values(counts).reduce((a,b)=>a+b,0)}）`);
+  console.log("   → Ctrl+Shift+R で確認 → git add/commit/push");
 }
-
-main().catch((e) => { console.error(e); process.exit(1); });
+main().catch(e=>{ console.error(e); process.exit(1); });
