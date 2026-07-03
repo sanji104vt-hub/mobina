@@ -152,6 +152,18 @@ h1.hero-title .hm{color:var(--magenta);text-shadow:0 0 22px var(--magenta-glow)}
 #score-about h2{font-family:var(--disp);font-size:19px;color:#fff;margin-bottom:10px;letter-spacing:.01em}
 #score-about p{font-size:13.5px;color:var(--ink-soft);line-height:1.85;max-width:820px}
 
+/* ====== ガイド・FAQ（静的コンテンツ） ====== */
+#guides{padding:44px 0 50px}
+#guides h2{font-family:var(--disp);font-size:20px;color:#fff;margin:38px 0 12px;letter-spacing:.01em}
+#guides > h2:first-child{margin-top:0}
+#guides p{font-size:14px;color:var(--ink-soft);line-height:1.9;max-width:760px;margin-bottom:14px}
+#faq{margin-top:44px}
+#faq h2{margin-top:0}
+.faq-updated{font-family:var(--mono);font-size:11px;color:var(--ink-faint);letter-spacing:.05em;margin-bottom:20px}
+#faq dl{display:flex;flex-direction:column;gap:18px}
+#faq dt{font-family:var(--disp);font-weight:600;font-size:15px;color:#fff;margin-bottom:6px}
+#faq dd{font-size:13.5px;color:var(--ink-soft);line-height:1.85;max-width:760px;margin-left:0}
+
 /* ====== ツールバー ====== */
 .toolbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:26px 0 18px}
 .result-count{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);letter-spacing:.05em}
@@ -452,6 +464,53 @@ h1.hero-title .hm{color:var(--magenta);text-shadow:0 0 22px var(--magenta-glow)}
 <section class="wrap view" id="columnsView" data-view="columns">
   <div id="columnsBody"></div>
 </section>
+
+<section class="wrap" id="guides">
+  <h2>10000mAhで最軽量クラスは何g？ 重量密度で見るモバイルバッテリー選び</h2>
+  <p>10000mAh帯のモバイルバッテリーは、150g台なら軽量ライン、200gを超えると通勤・通学の毎日持ちでは重さを感じ始めます。掲載商品では180g前後（Anker PowerCore 10000、CIO SMARTCOBY Pro SLIM 35Wなど）が実測ベースの軽量クラスで、mAh/g換算ではおよそ55前後になります。数字だけ見ると容量の大きいモデルほど得に見えますが、20000mAh級は400g近くになることが多く、鞄の中で存在感が変わります。</p>
+  <p>ケーブル一体型は「ケーブルを忘れる」リスクを消せる代わりに、その分の重量とサイズが上乗せされます。コンセント一体型も同様で、Anker Power Bank（Fusion, 30W）のように250gまで増える構成もあります。逆にAnker Nano Power Bank（5000mAh, MagGo, Slim）のように容量を5000mAhに絞れば110gまで下がり、mAh/gの効率では10000mAh級と同等かそれ以上になることもあります。</p>
+  <p>選び方の軸は明快です。スマホ1回分の充電で足りるなら5000mAh級で軽さを取り、1日を確実にカバーしたいなら10000mAh級の中で軽さ効率スコアが高いモデルを選ぶ。20000mAh超は「複数日の外泊」「ノートPCの充電」など、明確な用途がある人向けです。</p>
+
+  <h2>イヤホンは片耳何gから「重い」のか</h2>
+  <p>片耳4g台のイヤホンは、装着してから数時間経っても圧迫感が出にくい重さです。EarFun Air Pro 4（4.5g）やSOUNDPEATS Air4 Pro（4.7g）はこの帯に入り、長時間のリモート会議や作業用途でも耳が疲れにくいという声が多いモデルです。</p>
+  <p>片耳6gを超えると、装着直後は気にならなくても、2〜3時間を境に耳への圧が意識され始める人が増えます。ノイズキャンセリング機能やバッテリー容量を増やすほど筐体は大きく重くなりやすく、Sony WF-1000XM5（5.9g）のように性能を優先したモデルはこの中間帯に位置します。</p>
+  <p>重さと機能はトレードオフです。ANC・LDAC・ロング再生をすべて盛り込めば5〜6g台が現実的なラインで、4g台まで軽くしたい場合は機能を絞ったモデルを選ぶことになります。「軽さ最優先」か「機能最優先」かを先に決めると選びやすくなります。</p>
+
+  <h2>GaN充電器はなぜ軽くて小さいのか</h2>
+  <p>GaN（窒化ガリウム）は、これまでの充電器に使われてきたシリコン半導体より発熱が少なく、高い周波数で動作させても効率が落ちません。発熱が少ない分、放熱のための金属パーツや筐体の厚みを削れるため、同じ出力（W数）でもシリコン製より小型・軽量に作れます。</p>
+  <p>結果として、65W級の充電器でも100g前後に収まる製品が増え、ノートPCとスマホを同時に急速充電できるモデルが手のひらサイズで実現しています。W/gで比較すると、GaN充電器はシリコン製充電器より高い数値になりやすく、これが「軽さ効率スコア」で上位に入りやすい理由です。</p>
+
+  <section id="faq">
+    <h2>よくある質問</h2>
+    <p class="faq-updated">最終更新: 2026年7月</p>
+    <dl>
+      <dt>10000mAhで一番軽いモバイルバッテリーは何g？</dt>
+      <dd>編集部で確認した10000mAh帯では、Anker PowerCore 10000・CIO SMARTCOBY Pro SLIM 35Wがともに約180gで最軽量クラスです。容量を5000mAhに落とせば110g台（Anker Nano Power Bank）まで下がります。</dd>
+      <dt>電車内でモバイルバッテリーは使っていい？</dt>
+      <dd>2026年6月、東急電鉄が車内での使用を控えるよう案内を出しました（鉄道では初の事例）。飛行機の預け入れ禁止と合わせ、公共交通での扱いは厳格化の流れです。移動中に使う人ほど、発熱しにくいPSE適合品と落下させにくい軽量モデルを選ぶ意味が増しています。</dd>
+      <dt>ワイヤレスイヤホンで耳が痛くなるのは重さのせい？</dt>
+      <dd>重さだけでなく、イヤーピースのサイズが耳穴に合っていないことも主要な原因です。片耳5g前後までの軽量モデルでも、イヤーピースが大きすぎると圧迫感が出ます。まずは付属の複数サイズを試し、それでも痛む場合は片耳4g台の軽量モデルに替えるのが有効です。</dd>
+      <dt>モバイルバッテリーの表記容量どおり充電できない？</dt>
+      <dd>できません。電圧変換や回路のロスにより、実際にスマホへ充電できる量は表記容量の60〜70%程度が一般的です。10000mAh表記なら実質6000〜7000mAh程度、スマホ1.5〜2回分と考えておくと目安が立てやすくなります。</dd>
+      <dt>軽さ効率スコアの数字は何を根拠にしている？</dt>
+      <dd>すべてメーカーが公表している公称値（容量mAh・重量g・最大出力W）から算出しています。モバイルバッテリー・GaN充電器は「容量または出力÷重量」、イヤホンは片耳重量の実数をそのまま評価に使い、独自の推測値や非公開データは使用していません。</dd>
+    </dl>
+  </section>
+</section>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type":"Question","name":"10000mAhで一番軽いモバイルバッテリーは何g？","acceptedAnswer":{"@type":"Answer","text":"編集部で確認した10000mAh帯では、Anker PowerCore 10000・CIO SMARTCOBY Pro SLIM 35Wがともに約180gで最軽量クラスです。容量を5000mAhに落とせば110g台（Anker Nano Power Bank）まで下がります。"}},
+    {"@type":"Question","name":"電車内でモバイルバッテリーは使っていい？","acceptedAnswer":{"@type":"Answer","text":"2026年6月、東急電鉄が車内での使用を控えるよう案内を出しました（鉄道では初の事例）。飛行機の預け入れ禁止と合わせ、公共交通での扱いは厳格化の流れです。"}},
+    {"@type":"Question","name":"ワイヤレスイヤホンで耳が痛くなるのは重さのせい？","acceptedAnswer":{"@type":"Answer","text":"重さだけでなく、イヤーピースのサイズが耳穴に合っていないことも主要な原因です。まずは付属の複数サイズを試し、それでも痛む場合は片耳4g台の軽量モデルに替えるのが有効です。"}},
+    {"@type":"Question","name":"モバイルバッテリーの表記容量どおり充電できない？","acceptedAnswer":{"@type":"Answer","text":"できません。電圧変換や回路のロスにより、実際にスマホへ充電できる量は表記容量の60〜70%程度が一般的です。"}},
+    {"@type":"Question","name":"軽さ効率スコアの数字は何を根拠にしている？","acceptedAnswer":{"@type":"Answer","text":"すべてメーカーが公表している公称値（容量mAh・重量g・最大出力W）から算出しています。独自の推測値や非公開データは使用していません。"}}
+  ]
+}
+</script>
 
 <footer class="site-footer">
   <div class="wrap">
