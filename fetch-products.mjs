@@ -49,24 +49,55 @@ const CATALOG = {
       "スマートトラッカー", "落とし物 防止 タグ", "MagSafe スマートタグ",
     ],
   },
+  gan: {
+    target: 20,
+    keywords: [
+      "GaN 充電器 軽量", "窒化ガリウム 充電器 65W", "GaN充電器 PD 急速充電", "GaN 充電器 折りたたみ",
+    ],
+  },
+  ssd: {
+    target: 15,
+    keywords: [
+      "ポータブルSSD 1TB 軽量", "外付けSSD 携帯 小型",
+    ],
+  },
+  stand: {
+    target: 15,
+    keywords: [
+      "スマホスタンド 折りたたみ 軽量", "スマホスタンド 携帯 コンパクト",
+    ],
+  },
+  pouch: {
+    target: 15,
+    keywords: [
+      "ガジェットポーチ 軽量", "モバイルバッテリー ポーチ 収納",
+    ],
+  },
 };
 
 /* 価格レンジ（この外はバンドル/部品とみなして除外） */
 const PRICE_RANGE = {
   earphone: [1200, 80000], battery: [800, 30000], smarttag: [500, 15000],
+  gan: [800, 15000], ssd: [3000, 40000], stand: [500, 8000], pouch: [800, 10000],
 };
 /* アクセサリ等の除外ワード */
 const EXCLUDE = {
   earphone: /ケース|カバー|イヤーピース|イヤーフック|イヤーパッド|交換用|互換|フィルム|保護|ストラップ|収納|ホルダー|シール|変換|分配|片耳のみ|抗菌/,
   battery: /ケース|カバー|フィルム|保護|交換用|互換|スタンド|ホルダー|収納|変換|シール|ステッカー|単体|ポーチ/,
   smarttag: /ケース|カバー|ホルダー|キーホルダー|フィルム|保護|交換用|互換|バンド|ストラップ|シリコン|アクセサリ|ボタン電池|電池\s*単体|3個|4個/,
+  gan: /ケース|カバー|保護|フィルム|交換用|互換|ケーブルのみ|ケーブル単体|延長コード/,
+  ssd: /ケース|カバー|保護|フィルム|交換用|互換|SDカード|microSD|USBメモリ|変換アダプタ|ケーブルのみ/,
+  stand: /フィルム|保護|交換用|互換|ケーブルのみ/,
+  pouch: /ケース|カバー|保護フィルム|交換用|イヤホン専用/,
 };
 const MIN_REVIEWS = 3;
 
 const BRANDS = ["Anker","Soundcore","SOUNDPEATS","EarFun","Sony","ソニー","Shokz","JBL","Jabra","Bose","BOSE",
   "final","Victor","JVC","audio-technica","オーディオテクニカ","Nothing","CIO","ELECOM","エレコム","cheero",
   "UGREEN","Belkin","AUKEY","Apple","Tile","MAMORIO","Beats","Technics","ag","NUARL","ambie","HUAWEI","Google",
-  "Samsung","BUFFALO","ナカバヤシ","オウルテック","MOTTERU","RORRY","Baseus"];
+  "Samsung","BUFFALO","ナカバヤシ","オウルテック","MOTTERU","RORRY","Baseus",
+  "SanDisk","Crucial","WD","I-O DATA","アイ・オー・データ","Transcend","Seagate","Logitec",
+  "ESR","Nulaxy","BUBM","tomtoc","Lomicall","Moft","MOFT"];
 
 /* 機能検出（タグ＝絞り込み用 / spec＝カードのチップ） */
 const FEATURES = {
@@ -100,6 +131,31 @@ const FEATURES = {
     {re:/Android|Google/i, spec:"Android対応"},
     {re:/防水|IPX?\d/i, spec:"防水"},
     {re:/音|アラーム|ブザー/i, spec:"アラーム"},
+  ],
+  gan: [
+    {re:/GaN|窒化ガリウム/i, spec:"GaN(窒化ガリウム)"},
+    {re:/\bPD\b|Power\s?Delivery/i, tag:"PD対応", spec:"PD対応"},
+    {re:/急速/i, spec:"急速充電"},
+    {re:/折りたたみ|折畳/i, tag:"折りたたみ", spec:"折りたたみプラグ"},
+    {re:/複数ポート|同時充電|\d\s?ポート/i, spec:"複数ポート"},
+  ],
+  ssd: [
+    {re:/USB-?C|USB\s?3\.?2?/i, spec:"USB-C接続"},
+    {re:/Gbps|高速転送|高速/i, spec:"高速転送"},
+    {re:/耐衝撃|防水|IP\d/i, tag:"防水", spec:"耐衝撃/防水"},
+    {re:/暗号化|パスワード/i, spec:"暗号化対応"},
+  ],
+  stand: [
+    {re:/折りたたみ|折畳/i, tag:"折りたたみ", spec:"折りたたみ"},
+    {re:/MagSafe|マグネット/i, spec:"MagSafe対応"},
+    {re:/角度調整|多段階/i, spec:"角度調整"},
+    {re:/アルミ|金属/i, spec:"アルミ製"},
+  ],
+  pouch: [
+    {re:/防水|撥水/i, tag:"防水", spec:"撥水/防水"},
+    {re:/仕切り|収納ポケット/i, spec:"仕切りあり"},
+    {re:/軽量/i, tag:"軽量", spec:"軽量"},
+    {re:/PU|レザー|本革/i, spec:"レザー調"},
   ],
 };
 
@@ -197,9 +253,19 @@ async function buildAuto(curatedCodes){
       const cheap = pMax>pMin ? 1-((price-pMin)/(pMax-pMin)) : 0.5;
       const cospa = clampPct((rating/5)*55 + cheap*45);
       const { tags, specs } = detect(cat, fullText);
-      const weight = cat==="battery" ? parseNum(fullText, /(?:重量|約)\s*([0-9]{2,4})\s*g/) : null;
-      const mAh = parseNum(fullText, /([0-9]{4,6})\s*mAh/i);
-      const specList = (mAh && cat==="battery") ? [`${mAh}mAh`, ...specs] : specs;
+      // 重量：商品名/キャッチコピーから抽出できた場合のみ採用。推測は絶対にしない（抽出不可はnull＝「重量未確認」表示）
+      const WEIGHT_CATS = ["battery","gan","ssd","stand","pouch"];
+      const weight = WEIGHT_CATS.includes(cat) ? parseNum(fullText, /(?:重量|約)\s*([0-9]{2,4}(?:\.[0-9])?)\s*g/) : null;
+      // 容量/出力の数値（軽さ効率スコア用）：battery=mAh、gan=W、ssd=GB（TB表記はGB換算）
+      const mAh = cat==="battery" ? parseNum(fullText, /([0-9]{4,6})\s*mAh/i) : null;
+      const watt = cat==="gan" ? parseNum(fullText, /([0-9]{2,3})\s*W(?!h)/i) : null;
+      const tb = cat==="ssd" ? parseNum(fullText, /([0-9](?:\.[0-9])?)\s*TB/i) : null;
+      const gb = cat==="ssd" ? parseNum(fullText, /([0-9]{3,4})\s*GB/i) : null;
+      const specValue = cat==="battery" ? mAh : cat==="gan" ? watt : cat==="ssd" ? (tb ? tb*1000 : gb) : null;
+      const specList = (mAh && cat==="battery") ? [`${mAh}mAh`, ...specs]
+        : (watt && cat==="gan") ? [`${watt}W`, ...specs]
+        : (cat==="ssd" && (tb||gb)) ? [`${tb?tb+"TB":gb+"GB"}`, ...specs]
+        : specs;
       const pick = [];
       if(reviews>=100 && rating>=4.3) pick.push(`楽天★${rating}・${reviews}件と評価が安定`);
       else pick.push(`楽天★${rating}（${reviews}件）`);
@@ -207,7 +273,7 @@ async function buildAuto(curatedCodes){
       return {
         id:`auto-${cat}-${it.itemCode.replace(/[^a-zA-Z0-9]/g,"-")}`.slice(0,60),
         cat, brand:detectBrand(it.itemName, it.shopName), name:cleanName(it.itemName),
-        price, rating, reviews, weight, spec_value: cat==="battery" ? mAh : null,
+        price, rating, reviews, weight, spec_value: specValue,
         image:upscale(it.mediumImageUrls[0].imageUrl), purchase:it.affiliateUrl||it.itemUrl||"#",
         tags, specs:specList.slice(0,5), cospa, trust, pick,
       };
