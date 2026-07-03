@@ -78,7 +78,7 @@ export default [
   {
     id: "bat-anker-fusion30", cat: "battery",
     brand: "Anker", name: "Power Bank (Fusion, 30W)",
-    weight: 250, icon: "🔋",
+    weight: 250, spec_value: 10000, icon: "🔋",
     tags: ["PD対応"],
     specs: ["10000mAh", "PD30W急速", "コンセント一体(プラグ内蔵)", "USB-Cケーブル一体", "PSE適合"],
     axes: { cospa: 84, portability: 56, performance: 88, usability: 96, trust: 88 },
@@ -88,7 +88,7 @@ export default [
   {
     id: "bat-cio-smartcoby-slim", cat: "battery",
     brand: "CIO", name: "SMARTCOBY Pro SLIM 35W",
-    weight: 180, icon: "🔋",
+    weight: 180, spec_value: 10000, icon: "🔋",
     tags: ["PD対応", "薄型"],
     specs: ["10000mAh", "PD35W(PPS対応)", "厚さ約16mm", "3ポート(C×2/A×1)", "パススルー対応"],
     axes: { cospa: 90, portability: 84, performance: 86, usability: 84, trust: 82 },
@@ -98,7 +98,7 @@ export default [
   {
     id: "bat-anker-nano-maggo-slim", cat: "battery",
     brand: "Anker", name: "Nano Power Bank (5000mAh, MagGo, Slim)",
-    weight: 110, icon: "🔋",
+    weight: 110, spec_value: 5000, icon: "🔋",
     tags: ["ワイヤレス充電", "軽量", "薄型"],
     specs: ["5000mAh", "Qi2 ワイヤレス15W", "厚さ約8.6mm(史上最薄)", "MagSafe対応", "有線20W入出力"],
     axes: { cospa: 80, portability: 96, performance: 70, usability: 90, trust: 86 },
@@ -108,7 +108,7 @@ export default [
   {
     id: "bat-anker-powercore10000", cat: "battery",
     brand: "Anker", name: "PowerCore 10000",
-    weight: 180, icon: "🔋",
+    weight: 180, spec_value: 10000, icon: "🔋",
     tags: ["軽量"],
     specs: ["10000mAh", "約180gの軽量定番", "コンパクト設計", "USB-A出力", "PSE適合"],
     axes: { cospa: 92, portability: 86, performance: 58, usability: 80, trust: 88 },
@@ -118,7 +118,7 @@ export default [
   {
     id: "bat-anker-737-24000", cat: "battery",
     brand: "Anker", name: "737 Power Bank (PowerCore 24000)",
-    weight: 630, icon: "🔋",
+    weight: 630, spec_value: 24000, icon: "🔋",
     tags: ["PD対応", "大容量"],
     specs: ["24000mAh", "最大140W出力", "ノートPC充電対応", "残量ディスプレイ搭載", "3ポート"],
     axes: { cospa: 78, portability: 30, performance: 96, usability: 82, trust: 86 },
@@ -128,7 +128,7 @@ export default [
   {
     id: "bat-elecom-de-c86-10000", cat: "battery",
     brand: "ELECOM", name: "半固体モバイルバッテリー DE-C86-10000BK",
-    weight: 220, icon: "🔋",   /* 公式仕様: 約220g（10000mAh/35W版） */
+    weight: 220, spec_value: 10000, icon: "🔋",   /* 公式仕様: 約220g（10000mAh/35W版） */
     tags: ["PD対応", "半固体電池"],
     specs: ["10000mAh", "半固体電池(高安全・長寿命)", "最大35W出力", "USB-C×2/A×1", "約2000回使用可"],
     axes: { cospa: 72, portability: 74, performance: 78, usability: 86, trust: 84 },

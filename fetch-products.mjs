@@ -154,11 +154,11 @@ async function buildCurated(){
         image: upscale(it.mediumImageUrls?.[0]?.imageUrl||""), purchase: it.affiliateUrl||it.itemUrl||"#",
       } : { price:null, rating:0, reviews:0, image:"", purchase:"#" };
       out.push({ id:e.id, cat:e.cat, brand:e.brand, name:e.name, ...dyn,
-        weight:e.weight, icon:e.icon, tags:e.tags, specs:e.specs, axes:e.axes, pick:e.pick });
+        weight:e.weight, spec_value:e.spec_value, icon:e.icon, tags:e.tags, specs:e.specs, axes:e.axes, pick:e.pick });
       console.log(`  ★ ${e.id.padEnd(26)} ¥${dyn.price}`);
-    }catch(err){ console.warn(`  ⚠ ${e.id}: ${err.message}`); 
+    }catch(err){ console.warn(`  ⚠ ${e.id}: ${err.message}`);
       out.push({ id:e.id, cat:e.cat, brand:e.brand, name:e.name, price:null, rating:0, reviews:0,
-        image:"", purchase:"#", weight:e.weight, icon:e.icon, tags:e.tags, specs:e.specs, axes:e.axes, pick:e.pick }); }
+        image:"", purchase:"#", weight:e.weight, spec_value:e.spec_value, icon:e.icon, tags:e.tags, specs:e.specs, axes:e.axes, pick:e.pick }); }
     await sleep(1100);
   }
   return out;
@@ -207,7 +207,7 @@ async function buildAuto(curatedCodes){
       return {
         id:`auto-${cat}-${it.itemCode.replace(/[^a-zA-Z0-9]/g,"-")}`.slice(0,60),
         cat, brand:detectBrand(it.itemName, it.shopName), name:cleanName(it.itemName),
-        price, rating, reviews, weight,
+        price, rating, reviews, weight, spec_value: cat==="battery" ? mAh : null,
         image:upscale(it.mediumImageUrls[0].imageUrl), purchase:it.affiliateUrl||it.itemUrl||"#",
         tags, specs:specList.slice(0,5), cospa, trust, pick,
       };
