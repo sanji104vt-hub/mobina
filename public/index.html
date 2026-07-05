@@ -25,10 +25,13 @@
 <meta property="og:description" content="イヤホン×モバイルバッテリーを軽さで選ぶ比較サイト。">
 <meta property="og:url" content="https://mobina.sanji-104vt.workers.dev/">
 <meta property="og:site_name" content="Mobina">
+<meta name="twitter:card" content="summary_large_image">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<!-- SODA LABセクション（マスコット3D/マーキー/bento/週間ピック）専用フォント -->
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 
 <style>
 :root{
@@ -328,6 +331,158 @@ h1.hero-title .hm{color:var(--magenta);text-shadow:0 0 22px var(--magenta-glow)}
 .range-track{position:absolute;top:14px;left:0;right:0;height:4px;background:rgba(255,255,255,.08)}
 .range-track i{position:absolute;height:100%;background:var(--cyan);box-shadow:0 0 10px var(--cyan-glow)}
 
+/* ============================================================
+   SODA LAB dark theme — マスコット3D/マーキー/bento/週間ピック
+   既存テーマの変数(--ink, --radius等)と衝突するため .soda-hero 内にスコープ。
+   既存の <header>/<footer>/グリッド/ランキング/コラム/ガイド/FAQ は変更しない。
+   ============================================================ */
+.soda-hero{
+  --porcelain:#0B0C12; --ink:#EFF2FA; --socket:#6C93FF; --charge:#C6FF4D; --blush:#FF9ED4; --card:#12141D;
+  --radius:22px; --shadow:6px 6px 0 var(--ink); --shadow-sm:4px 4px 0 var(--ink);
+  position:relative; isolation:isolate; overflow:hidden;
+  background:var(--porcelain); color:var(--ink);
+  font-family:"Zen Kaku Gothic New",sans-serif; line-height:1.8;
+}
+.soda-hero ::selection{background:var(--charge);color:var(--card)}
+.soda-hero::before{
+  content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(239,242,250,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(239,242,250,.045) 1px,transparent 1px);
+  background-size:32px 32px;
+}
+
+/* バッテリー型スクロールゲージ（サイト全体の読了率・固定表示） */
+.battery-hud{
+  --ink:#EFF2FA; --card:#12141D; --socket:#6C93FF; --charge:#C6FF4D;
+  position:fixed;top:14px;right:14px;z-index:90;
+  display:flex;align-items:center;gap:8px;
+  background:var(--card);border:2px solid var(--ink);border-radius:999px;
+  padding:6px 12px 6px 8px;box-shadow:4px 4px 0 var(--ink);
+  font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;color:var(--ink);
+}
+.battery-shell{position:relative;width:44px;height:20px;border:2px solid var(--ink);border-radius:5px;background:#05060A}
+.battery-shell::after{content:"";position:absolute;right:-6px;top:5px;width:4px;height:8px;background:var(--ink);border-radius:0 2px 2px 0}
+.battery-fill{position:absolute;left:2px;top:2px;bottom:2px;width:0%;background:var(--socket);border-radius:2px;transition:width .15s linear, background .3s}
+.battery-hud.full .battery-fill{background:var(--charge)}
+.battery-hud .pct{min-width:4ch;text-align:right}
+
+/* ヒーロー（3Dマスコット） */
+.soda-hero .hero{position:relative;min-height:70vh;display:flex;align-items:center;padding:64px 20px 56px}
+.soda-hero .hero-inner{position:relative;z-index:2;width:100%;max-width:1120px;margin:0 auto}
+.soda-hero #stage{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:pointer;touch-action:pan-y}
+.soda-hero .hero-copy{position:relative;z-index:2;text-align:left;max-width:600px;pointer-events:none}
+@media(max-width:640px){
+  .soda-hero .hero{align-items:flex-start;padding-top:48px}
+  .soda-hero .hero-copy{text-align:center;margin:0 auto}
+  .soda-hero .cta-row{justify-content:center}
+}
+.soda-hero .hero-copy .eyebrow{
+  pointer-events:auto;display:inline-block;
+  font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;letter-spacing:.18em;
+  background:var(--card);color:var(--charge);border:1px solid var(--ink);border-radius:999px;padding:6px 17px;
+  transform:rotate(-2deg);margin-bottom:22px;
+}
+.soda-hero .mascot-title{
+  font-family:"Zen Maru Gothic",sans-serif;font-weight:900;
+  font-size:clamp(28px,5.4vw,58px);line-height:1.35;letter-spacing:.02em;
+  text-shadow:0 3px 0 rgba(11,12,18,.85), 0 0 24px rgba(11,12,18,.95);
+}
+.soda-hero .mascot-title .stroke{color:transparent;-webkit-text-stroke:2.5px var(--ink)}
+.soda-hero .mascot-title .charge{position:relative;display:inline-block}
+.soda-hero .mascot-title .charge::after{
+  content:"";position:absolute;left:0;right:0;bottom:6px;height:.36em;z-index:-1;
+  background:var(--charge);border-radius:6px;transform:rotate(-1deg);
+}
+.soda-hero .hero-copy p.lead{margin-top:20px;font-size:clamp(14px,1.8vw,17px);font-weight:500;color:var(--ink);text-shadow:0 0 12px rgba(11,12,18,1)}
+.soda-hero .cta-row{margin-top:30px;display:flex;gap:14px;justify-content:flex-start;flex-wrap:wrap;pointer-events:auto}
+.soda-hero .btn{
+  display:inline-block;text-decoration:none;font-weight:700;font-size:15px;color:var(--ink);
+  border:2px solid var(--ink);border-radius:999px;padding:14px 30px;
+  box-shadow:var(--shadow-sm);transition:transform .15s,box-shadow .15s;background:var(--card);
+}
+.soda-hero .btn.primary{background:var(--socket);color:#fff}
+.soda-hero .btn:hover,.soda-hero .btn:focus-visible{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--ink)}
+.soda-hero .tap-hint{
+  position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:2;
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.14em;
+  background:var(--card);border:2px solid var(--ink);border-radius:999px;padding:6px 16px;
+  box-shadow:var(--shadow-sm);animation:hintFloat 2.6s ease-in-out infinite;
+}
+@keyframes hintFloat{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-6px)}}
+
+/* マーキー */
+.soda-hero .marquee{border-top:2px solid var(--ink);border-bottom:2px solid var(--ink);background:var(--ink);color:var(--porcelain);overflow:hidden;white-space:nowrap;padding:12px 0;position:relative;z-index:2}
+.soda-hero .marquee .track{display:inline-block;animation:scroll 26s linear infinite;font-family:"IBM Plex Mono",monospace;font-size:14px;font-weight:600;letter-spacing:.1em}
+.soda-hero .marquee .track span{margin:0 26px}
+.soda-hero .marquee .zap{color:var(--socket)}
+@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* 共通セクション */
+.soda-hero section{position:relative;z-index:2;padding:64px 20px;max-width:1120px;margin:0 auto}
+.soda-hero .sec-head{margin-bottom:38px}
+.soda-hero .sec-head .en{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;letter-spacing:.2em;color:var(--socket);display:block;margin-bottom:10px}
+.soda-hero .sec-head h3{font-family:"Zen Maru Gothic",sans-serif;font-weight:900;font-size:clamp(22px,3.4vw,34px);line-height:1.4}
+
+/* カテゴリBento */
+.soda-hero .bento{display:grid;grid-template-columns:repeat(6,1fr);gap:16px}
+.soda-hero .bento a{
+  position:relative;display:flex;flex-direction:column;justify-content:flex-end;gap:6px;
+  min-height:170px;padding:22px;text-decoration:none;color:var(--ink);
+  background:var(--card);border:2px solid var(--ink);border-radius:var(--radius);
+  box-shadow:var(--shadow);overflow:hidden;transition:transform .18s,box-shadow .18s;
+}
+.soda-hero .bento a:hover,.soda-hero .bento a:focus-visible{transform:translate(-3px,-3px) rotate(-.4deg);box-shadow:9px 9px 0 var(--ink)}
+.soda-hero .bento a:nth-child(1){grid-column:span 3;background:linear-gradient(135deg,rgba(108,147,255,.16) 0%,var(--card) 70%)}
+.soda-hero .bento a:nth-child(2){grid-column:span 3;background:linear-gradient(135deg,rgba(198,255,77,.14) 0%,var(--card) 70%)}
+.soda-hero .bento a:nth-child(3),.soda-hero .bento a:nth-child(4),.soda-hero .bento a:nth-child(5){grid-column:span 2}
+.soda-hero .bento a:nth-child(4){background:linear-gradient(135deg,rgba(255,158,212,.16) 0%,var(--card) 70%)}
+.soda-hero .bento .cat-en{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.16em;opacity:.65}
+.soda-hero .bento .cat-ja{font-family:"Zen Maru Gothic",sans-serif;font-weight:900;font-size:20px}
+.soda-hero .bento .cat-note{font-size:13px;opacity:.75}
+.soda-hero .bento .badge{position:absolute;top:16px;right:16px;font-family:"IBM Plex Mono",monospace;font-size:10px;font-weight:600;border:2px solid currentColor;border-radius:999px;padding:3px 10px;transform:rotate(3deg)}
+@media(max-width:760px){.soda-hero .bento{grid-template-columns:1fr 1fr}.soda-hero .bento a{grid-column:span 2 !important}}
+
+/* 今週のフル充電アイテム（実データをJSで注入） */
+.soda-hero .picks{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:820px){.soda-hero .picks{grid-template-columns:1fr}}
+.soda-hero .pick{background:var(--card);border:2px solid var(--ink);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;transition:transform .18s,box-shadow .18s}
+.soda-hero .pick:hover{transform:translate(-3px,-3px);box-shadow:9px 9px 0 var(--ink)}
+.soda-hero .pick .thumb{height:170px;border-bottom:2px solid var(--ink);position:relative;display:flex;align-items:center;justify-content:center;background:var(--panel-2)}
+.soda-hero .pick .thumb img{max-height:100%;max-width:100%;object-fit:contain;position:relative;z-index:1}
+.soda-hero .pick .thumb .ph{font-family:"IBM Plex Mono",monospace;font-size:28px;background:var(--card);border:2px solid var(--ink);border-radius:8px;padding:8px 14px}
+.soda-hero .pick:nth-child(1) .thumb{background:repeating-linear-gradient(-45deg,rgba(108,147,255,.16) 0 14px,rgba(108,147,255,.06) 14px 28px)}
+.soda-hero .pick:nth-child(2) .thumb{background:repeating-linear-gradient(-45deg,rgba(198,255,77,.14) 0 14px,rgba(198,255,77,.05) 14px 28px)}
+.soda-hero .pick:nth-child(3) .thumb{background:repeating-linear-gradient(-45deg,rgba(255,158,212,.16) 0 14px,rgba(255,158,212,.06) 14px 28px)}
+.soda-hero .pick .rank{position:absolute;top:-2px;left:16px;background:var(--card);color:var(--charge);border:2px solid var(--ink);border-bottom:none;font-family:"Zen Maru Gothic",sans-serif;font-weight:900;font-size:16px;padding:9px 12px 11px;border-radius:0 0 12px 12px}
+.soda-hero .pick .body{padding:20px 22px 24px;display:flex;flex-direction:column;gap:10px;flex:1}
+.soda-hero .pick h4{font-family:"Zen Maru Gothic",sans-serif;font-weight:900;font-size:17px;line-height:1.5}
+.soda-hero .pick .spec{display:flex;gap:6px;flex-wrap:wrap}
+.soda-hero .pick .spec span{font-family:"IBM Plex Mono",monospace;font-size:10px;font-weight:600;border:1.5px solid var(--ink);border-radius:999px;padding:3px 9px;background:var(--card)}
+.soda-hero .pick p{font-size:13px;color:#98A0B8}
+.soda-hero .pick .charge-meter{margin-top:auto;display:flex;align-items:center;gap:10px;font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600}
+.soda-hero .pick .charge-meter .bar{flex:1;height:12px;border:2px solid var(--ink);border-radius:999px;overflow:hidden;background:#05060A}
+.soda-hero .pick .charge-meter .bar i{display:block;height:100%;background:var(--charge);width:0;transition:width 1s cubic-bezier(.2,.9,.3,1)}
+.soda-hero .pick .btn{margin-top:14px;text-align:center;font-size:14px;padding:12px 20px}
+
+/* 診断ティーザー */
+.soda-hero .quiz-teaser{background:var(--socket);border:2px solid var(--ink);border-radius:28px;box-shadow:8px 8px 0 var(--ink);color:#fff;padding:50px 36px;display:flex;flex-wrap:wrap;gap:30px;align-items:center;justify-content:space-between}
+.soda-hero .quiz-teaser .txt{max-width:520px}
+.soda-hero .quiz-teaser .en{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.2em;color:var(--charge)}
+.soda-hero .quiz-teaser h3{font-family:"Zen Maru Gothic",sans-serif;font-weight:900;font-size:clamp(22px,3.2vw,32px);margin:10px 0 14px;line-height:1.5}
+.soda-hero .quiz-teaser p{font-size:14px;opacity:.92}
+.soda-hero .quiz-teaser .btn{background:var(--charge);border-color:var(--ink);color:var(--card);font-size:16px;padding:16px 34px}
+@media(max-width:640px){.soda-hero .quiz-teaser{padding:36px 24px}}
+
+@media(prefers-reduced-motion:reduce){
+  .soda-hero .marquee .track{animation:none}
+  .soda-hero .tap-hint{animation:none}
+  html{scroll-behavior:auto}
+}
+.soda-hero .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s,transform .7s}
+.soda-hero .reveal.in{opacity:1;transform:none}
+@media(prefers-reduced-motion:reduce){.soda-hero .reveal{opacity:1;transform:none;transition:none}}
+
 </style>
 <script type="application/ld+json">
 {
@@ -401,6 +556,103 @@ h1.hero-title .hm{color:var(--magenta);text-shadow:0 0 22px var(--magenta-glow)}
     <span class="pr-tag">PR</span>
     当サイトはアフィリエイト広告（楽天アフィリエイト・Amazonアソシエイト等）を利用しています。価格・評価は参考値です。
   </div>
+</div>
+
+<!-- ============================================================
+     SODA LAB dark theme セクション（見本 mobina-soda-lab-dark.html より）
+     マスコット3D・マーキー・カテゴリbento・週間ピック(実データ)・診断ティーザー。
+     既存のヘッダー/検索/カテゴリチップ/商品グリッド/ランキング/コラム/ガイド/FAQ/フッターは変更していない。
+     ============================================================ -->
+<div class="battery-hud" id="batteryHud" aria-hidden="true">
+  <div class="battery-shell"><div class="battery-fill" id="batteryFill"></div></div>
+  <span class="pct" id="batteryPct">0%</span>
+</div>
+
+<div class="soda-hero">
+  <div class="hero" id="mascotHero">
+    <canvas id="stage" aria-label="3Dマスコット モビィと浮遊するガジェットたち" role="img"></canvas>
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <span class="eyebrow">PORTABLE GADGET LAB — SINCE 2025</span>
+        <h2 class="mascot-title">持ちものは<span class="stroke">軽く</span>、<br>毎日は<span class="charge">フル充電</span>。</h2>
+        <p class="lead">Mobinaは、カバンの中身を軽くするための研究所。<br>「本当に持ち歩く価値があるか」だけを基準に、ポータブルガジェットを選び抜きます。</p>
+        <div class="cta-row">
+          <a class="btn primary" href="#soda-picks">今週のピックを見る</a>
+          <a class="btn" href="#list">全197件の比較を見る</a>
+        </div>
+      </div>
+    </div>
+    <div class="tap-hint" id="tapHint">TAP モビィをつついてみて</div>
+  </div>
+
+  <div class="marquee" aria-hidden="true">
+    <div class="track" id="marqueeTrack">
+      <span><span class="zap">⚡</span> CHARGE YOUR DAY</span><span>持たない勇気、持つならいいもの</span><span><span class="zap">⚡</span> 10000mAh IS THE NEW POCKET</span><span>ケーブル1本で暮らす</span><span><span class="zap">⚡</span> LIGHT BAG, FULL BATTERY</span><span>旅は荷物が軽いほど遠くへ行ける</span>
+    </div>
+  </div>
+
+  <section id="soda-categories">
+    <div class="sec-head reveal">
+      <span class="en">CATEGORIES</span>
+      <h3>カバンの中を、部門べつに研究する。</h3>
+    </div>
+    <div class="bento reveal">
+      <a href="#list" onclick="gotoCat('battery');return false;">
+        <span class="badge">MOST READ</span>
+        <span class="cat-en">POWER BANK</span>
+        <span class="cat-ja">モバイルバッテリー</span>
+        <span class="cat-note">重さと容量の最適解を探す部門</span>
+      </a>
+      <a href="#list" onclick="gotoCat('earphone');return false;">
+        <span class="cat-en">AUDIO</span>
+        <span class="cat-ja">イヤホン・オーディオ</span>
+        <span class="cat-note">通勤1時間を「自分の時間」に変える</span>
+      </a>
+      <a href="#list" onclick="gotoCat('gan');return false;">
+        <span class="cat-en">GaN CHARGER</span>
+        <span class="cat-ja">GaN充電器</span>
+        <span class="cat-note">「1本で全部」を目指す</span>
+      </a>
+      <a href="#list" onclick="gotoCat('ssd');return false;">
+        <span class="cat-en">STORAGE</span>
+        <span class="cat-ja">ポータブルSSD</span>
+        <span class="cat-note">旅先の写真・動画を守る</span>
+      </a>
+      <a href="#list" onclick="gotoCat('smarttag');return false;">
+        <span class="cat-en">SMART TAG</span>
+        <span class="cat-ja">スマートタグ</span>
+        <span class="cat-note">忘れ物・紛失防止の相棒</span>
+      </a>
+      <a href="#list" onclick="gotoCat('all');return false;">
+        <div>
+          <span class="cat-en">STAND & POUCH</span>
+          <span class="cat-ja" style="display:block">スタンド・ポーチほか全197件</span>
+        </div>
+        <span class="arrow">→</span>
+      </a>
+    </div>
+  </section>
+
+  <section id="soda-picks">
+    <div class="sec-head reveal">
+      <span class="en">WEEKLY PICKS</span>
+      <h3>今週の「フル充電アイテム」</h3>
+    </div>
+    <div class="picks reveal" id="sodaPicks">
+      <!-- 実データはJS(populateSodaPicks)が既存PRODUCTSから注入。ダミーではない -->
+    </div>
+  </section>
+
+  <section id="quiz">
+    <div class="quiz-teaser reveal">
+      <div class="txt">
+        <span class="en">MINIMAL LEVEL CHECK</span>
+        <h3>あなたのカバン、<br>あと何グラム軽くなる?</h3>
+        <p>まずは全197件の比較データベースから、あなたの用途に合う一台を探してみてください。</p>
+      </div>
+      <a class="btn" href="#list">商品を比較する ⚡</a>
+    </div>
+  </section>
 </div>
 
 <section class="wrap" id="score-about">
@@ -1153,11 +1405,346 @@ function showArticle(id){
   window.scrollTo({top:0, behavior:"auto"});
 }
 
+/* ===== SODA LAB: 週間ピック3枚に実データを注入（ダミーではなくPRODUCTSの実商品） ===== */
+function populateSodaPicks(){
+  const ids = ["bat-cio-smartcoby-slim", "ear-shokz-openfit2", "bat-anker-737-24000"];
+  const wrap = document.getElementById("sodaPicks");
+  if(!wrap) return;
+  wrap.innerHTML = ids.map((id, i)=>{
+    const p = PRODUCTS.find(x=>x.id===id);
+    if(!p) return "";
+    const score = mobinaScore(p);
+    const specHtml = (p.specs||[]).slice(0,3).map(s=>`<span>${s}</span>`).join("");
+    const thumb = p.image ? `<img src="${p.image}" alt="${p.name}" loading="lazy">` : `<span class="ph">${p.icon||"📦"}</span>`;
+    const desc = (p.pick && p.pick[0]) || `楽天★${p.rating}（${yen(p.reviews)}件）`;
+    return `
+    <article class="pick">
+      <div class="thumb"><span class="rank">No.${i+1}</span>${thumb}</div>
+      <div class="body">
+        <h4>${p.brand} ${p.name}</h4>
+        <div class="spec">${specHtml}</div>
+        <p>${desc}</p>
+        <div class="charge-meter"><span>推し度</span><div class="bar"><i data-fill="${score}%"></i></div><span>${score}%</span></div>
+        <a class="btn primary" href="${p.purchase}" rel="nofollow sponsored noopener" target="_blank">楽天で価格を見る</a>
+      </div>
+    </article>`;
+  }).join("");
+  wrap.querySelectorAll(".charge-meter .bar i").forEach(bar=>{ bar.style.width = bar.dataset.fill; });
+}
+/* ===== SODA LAB: bentoカテゴリタイルから既存フィルタを操作 ===== */
+function gotoCat(cat){
+  state.cat = cat;
+  document.querySelectorAll("#catChips .chip").forEach(c=>c.classList.toggle("is-active", c.dataset.cat===cat));
+  render();
+  document.getElementById("list").scrollIntoView({behavior:"smooth", block:"start"});
+}
+
 document.getElementById("priceDate").textContent = PRICE_DATE;
 syncSlider();
 syncWeightSlider();
 render();
+populateSodaPicks();
 
+</script>
+
+<!-- ============================================================
+     SODA LAB dark theme: Three.js マスコット「モビィ」＋浮遊ガジェット
+     見本 mobina-soda-lab-dark.html のスクリプトをそのまま追記（battery-hud/marquee/revealロジック含む）
+     ============================================================ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+  "use strict";
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ===== バッテリー型スクロールゲージ ===== */
+  var hud = document.getElementById("batteryHud");
+  var fill = document.getElementById("batteryFill");
+  var pct = document.getElementById("batteryPct");
+  function updateBattery(){
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    var p = max > 0 ? Math.round(h.scrollTop / max * 100) : 0;
+    fill.style.width = p + "%";
+    pct.textContent = p + "%";
+    hud.classList.toggle("full", p >= 100);
+  }
+  window.addEventListener("scroll", updateBattery, {passive:true});
+  updateBattery();
+
+  /* マーキーを2倍化してループの継ぎ目を消す */
+  var track = document.getElementById("marqueeTrack");
+  if(track){ track.innerHTML += track.innerHTML; }
+
+  /* ===== スクロールで出現 + 推し度メーター ===== */
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.classList.add("in");
+        e.target.querySelectorAll(".charge-meter .bar i").forEach(function(bar){
+          bar.style.width = bar.dataset.fill;
+        });
+        io.unobserve(e.target);
+      }
+    });
+  },{threshold:.2});
+  document.querySelectorAll(".reveal").forEach(function(el){ io.observe(el); });
+
+  /* ===== Three.js: マスコット「モビィ」と浮遊ガジェット ===== */
+  if(!window.THREE) return;
+  var canvas = document.getElementById("stage");
+  var renderer = new THREE.WebGLRenderer({canvas:canvas, alpha:true, antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(38, 1, .1, 100);
+  camera.position.set(0, 0.3, 8.2);
+
+  /* ライティング: 暗闇に浮かぶ磁器の質感(アンビエント控えめ+リム光強め) */
+  scene.add(new THREE.AmbientLight(0xffffff, .5));
+  var key = new THREE.DirectionalLight(0xffffff, .85);
+  key.position.set(3, 5, 6);
+  scene.add(key);
+  var rim = new THREE.DirectionalLight(0xc6ff4d, .55);
+  rim.position.set(-4, 2, -3);
+  scene.add(rim);
+  var fillLight = new THREE.DirectionalLight(0x6c93ff, .38);
+  fillLight.position.set(-2, -3, 4);
+  scene.add(fillLight);
+
+  var MAT = {
+    body:  new THREE.MeshStandardMaterial({color:0xeff2fa, roughness:.35, metalness:.05}),
+    ink:   new THREE.MeshStandardMaterial({color:0x171a21, roughness:.3}),
+    eye:   new THREE.MeshStandardMaterial({color:0x171a21, roughness:.15, metalness:.1}),
+    hilite:new THREE.MeshBasicMaterial({color:0xffffff}),
+    blush: new THREE.MeshStandardMaterial({color:0xff9ed4, roughness:.6}),
+    lime:  new THREE.MeshStandardMaterial({color:0xc6ff4d, roughness:.4}),
+    blue:  new THREE.MeshStandardMaterial({color:0x6c93ff, roughness:.4}),
+    lilac: new THREE.MeshStandardMaterial({color:0xd8cbff, roughness:.45})
+  };
+
+  /* --- モビィ本体 --- */
+  var mobi = new THREE.Group();
+  var head = new THREE.Group(); // 視線追従用
+
+  var body = new THREE.Mesh(new THREE.SphereGeometry(1.05, 48, 48), MAT.body);
+  body.scale.set(1, .94, .96);
+  head.add(body);
+
+  // おなかのスクリーン(バッテリー表示)
+  var screen = new THREE.Mesh(new THREE.CylinderGeometry(.42,.42,.08,32), MAT.ink);
+  screen.rotation.x = Math.PI/2;
+  screen.position.set(0, -.28, .92);
+  head.add(screen);
+  var screenBar = new THREE.Mesh(new THREE.BoxGeometry(.44,.16,.05), MAT.lime);
+  screenBar.position.set(0, -.28, .985);
+  head.add(screenBar);
+
+  // 目
+  function makeEye(x){
+    var g = new THREE.Group();
+    var e = new THREE.Mesh(new THREE.SphereGeometry(.13, 24, 24), MAT.eye);
+    e.scale.set(1, 1.25, .6);
+    g.add(e);
+    var h1 = new THREE.Mesh(new THREE.SphereGeometry(.045, 12, 12), MAT.hilite);
+    h1.position.set(.045, .06, .09);
+    g.add(h1);
+    var h2 = new THREE.Mesh(new THREE.SphereGeometry(.02, 10, 10), MAT.hilite);
+    h2.position.set(-.03, -.03, .1);
+    g.add(h2);
+    g.position.set(x, .28, .93);
+    return g;
+  }
+  head.add(makeEye(-.34));
+  head.add(makeEye(.34));
+
+  // ほっぺ
+  function makeBlush(x){
+    var b = new THREE.Mesh(new THREE.SphereGeometry(.1, 16, 16), MAT.blush);
+    b.scale.set(1.3, .8, .4);
+    b.position.set(x, .05, .95);
+    return b;
+  }
+  head.add(makeBlush(-.58));
+  head.add(makeBlush(.58));
+
+  // くち(小さいトーラスの下半分)
+  var mouth = new THREE.Mesh(new THREE.TorusGeometry(.07, .022, 10, 20, Math.PI), MAT.ink);
+  mouth.rotation.z = Math.PI;
+  mouth.position.set(0, .16, .99);
+  head.add(mouth);
+
+  // アンテナ
+  var stalk = new THREE.Mesh(new THREE.CylinderGeometry(.035,.035,.4,12), MAT.ink);
+  stalk.position.set(0, 1.16, 0);
+  head.add(stalk);
+  var bulbMat = new THREE.MeshStandardMaterial({color:0xc6ff4d, roughness:.4, emissive:0xc6ff4d, emissiveIntensity:0});
+  var bulb = new THREE.Mesh(new THREE.SphereGeometry(.14, 20, 20), bulbMat);
+  bulb.position.set(0, 1.42, 0);
+  head.add(bulb);
+
+  // うで(左右のまるい手)
+  function makeArm(x){
+    var a = new THREE.Mesh(new THREE.SphereGeometry(.19, 20, 20), MAT.body);
+    a.position.set(x, -.25, .25);
+    return a;
+  }
+  var armL = makeArm(-1.02), armR = makeArm(1.02);
+  head.add(armL); head.add(armR);
+
+  // あし
+  function makeFoot(x){
+    var f = new THREE.Mesh(new THREE.SphereGeometry(.24, 20, 20), MAT.blue);
+    f.scale.set(1, .55, 1.1);
+    f.position.set(x, -1.02, .1);
+    return f;
+  }
+  head.add(makeFoot(-.42));
+  head.add(makeFoot(.42));
+
+  mobi.add(head);
+  mobi.position.set(0, .1, 0);
+  scene.add(mobi);
+
+  // 足元のグロー(黒背景では黒い影が見えないため、着地点の発光リングに変更)
+  var shadow = new THREE.Mesh(
+    new THREE.CircleGeometry(1.1, 32),
+    new THREE.MeshBasicMaterial({color:0x6c93ff, transparent:true, opacity:.16})
+  );
+  shadow.rotation.x = -Math.PI/2;
+  shadow.position.y = -1.7;
+  scene.add(shadow);
+
+  /* --- 浮遊ガジェット --- */
+  var floaters = [];
+  function addFloater(mesh, r, speed, phase, ySpread){
+    mesh.userData = {r:r, speed:speed, phase:phase, ySpread:ySpread};
+    floaters.push(mesh);
+    scene.add(mesh);
+  }
+  // イヤホンリング
+  addFloater(new THREE.Mesh(new THREE.TorusGeometry(.42,.15,20,40), MAT.body), 3.2, .22, 0, .8);
+  // モバイルバッテリー
+  var bank = new THREE.Group();
+  var bankBody = new THREE.Mesh(new THREE.BoxGeometry(.9,.5,.28), MAT.blue);
+  bank.add(bankBody);
+  var bankStripe = new THREE.Mesh(new THREE.BoxGeometry(.5,.18,.3), MAT.lime);
+  bank.add(bankStripe);
+  addFloater(bank, 3.4, -.16, 2.1, .9);
+  // ケーブルの結び目
+  addFloater(new THREE.Mesh(new THREE.TorusKnotGeometry(.3,.09,80,12), MAT.lilac), 3.0, .19, 4.2, .7);
+  // 充電の稲妻がわりの八面体
+  addFloater(new THREE.Mesh(new THREE.OctahedronGeometry(.32), MAT.lime), 2.8, -.26, 1.2, .6);
+  // ピンクの小さいカプセル(ガム型バッテリー)
+  var caps = new THREE.Group();
+  var capsMid = new THREE.Mesh(new THREE.CylinderGeometry(.16,.16,.5,20), MAT.blush);
+  caps.add(capsMid);
+  var capTop = new THREE.Mesh(new THREE.SphereGeometry(.16,16,16), MAT.blush);
+  capTop.position.y=.25; caps.add(capTop);
+  var capBot = capTop.clone(); capBot.position.y=-.25; caps.add(capBot);
+  caps.rotation.z=.7;
+  addFloater(caps, 3.6, .13, 5.3, 1);
+
+  /* ===== インタラクション ===== */
+  var pointer = {x:0, y:0};
+  window.addEventListener("pointermove", function(e){
+    pointer.x = (e.clientX / window.innerWidth) * 2 - 1;
+    pointer.y = -(e.clientY / window.innerHeight) * 2 + 1;
+  }, {passive:true});
+
+  /* タップ演出: しゃがむ→ジャンプ→アンテナ発光 */
+  var jump = 0;
+  var raycaster = new THREE.Raycaster();
+  var clickV = new THREE.Vector2();
+  var hint = document.getElementById("tapHint");
+  canvas.addEventListener("pointerdown", function(e){
+    var rect = canvas.getBoundingClientRect();
+    clickV.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    clickV.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+    raycaster.setFromCamera(clickV, camera);
+    if(raycaster.intersectObject(mobi, true).length && jump <= 0){
+      jump = 1;
+      if(hint){ hint.style.opacity = 0; hint.style.transition = "opacity .6s"; }
+    }
+  });
+
+  /* 画面幅に応じた立ち位置(テキストと共存させる) */
+  var baseX = 0, baseY = .1;
+  function resize(){
+    var w = canvas.clientWidth, h = canvas.clientHeight;
+    if(canvas.width !== w || canvas.height !== h){
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      if(w < 640){        // モバイル: テキストの下に全身
+        camera.position.z = 11.5; baseX = 0; baseY = -1.5;
+      }else if(w < 1024){ // タブレット: やや右
+        camera.position.z = 9.5; baseX = 1.9; baseY = 0;
+      }else{              // デスクトップ: 右側の主役
+        camera.position.z = 8.2; baseX = 2.4; baseY = .1;
+      }
+      camera.updateProjectionMatrix();
+    }
+  }
+
+  var t = 0;
+  function frame(){
+    resize();
+    t += reduceMotion ? 0 : .016;
+
+    // モビィ: ふわふわ + 視線追従
+    mobi.position.x += (baseX - mobi.position.x) * .08;
+    mobi.position.y = baseY + Math.sin(t * 1.4) * .16;
+    head.rotation.y += ((pointer.x * .5) - head.rotation.y) * .06;
+    head.rotation.x += ((-pointer.y * .28) - head.rotation.x) * .06;
+    armL.position.y = -.25 + Math.sin(t*2.2)*.05;
+    armR.position.y = -.25 + Math.sin(t*2.2 + Math.PI)*.05;
+
+    // タップ: スカッシュ→ジャンプ→キラッ
+    if(jump > 0){
+      var p = 1 - jump; // 0→1 で進行
+      if(p < .18){ // しゃがみ(予備動作)
+        var s = p / .18;
+        head.scale.set(1 + s*.12, 1 - s*.18, 1 + s*.12);
+      }else{       // 跳躍+伸び
+        var q = (p - .18) / .82;
+        mobi.position.y += Math.sin(q * Math.PI) * 1.25;
+        head.scale.set(1 - Math.sin(q*Math.PI)*.06, 1 + Math.sin(q*Math.PI)*.1, 1 - Math.sin(q*Math.PI)*.06);
+        mobi.rotation.z = Math.sin(q * Math.PI * 2) * .14;
+      }
+      bulbMat.emissiveIntensity = Math.sin(p * Math.PI) * 1.6;
+      jump -= .022;
+      if(jump <= 0){
+        jump = 0; head.scale.set(1,1,1); mobi.rotation.z = 0; bulbMat.emissiveIntensity = 0;
+      }
+    }
+    shadow.position.x = mobi.position.x;
+    shadow.position.y = baseY - 1.8;
+    shadow.scale.setScalar(Math.max(.4, 1 - (mobi.position.y - baseY) * .3));
+    shadow.material.opacity = Math.max(0, .16 * (1 - (mobi.position.y - baseY) * .45));
+
+    // 浮遊ガジェット: モビィの周りをゆっくり回る
+    floaters.forEach(function(m, i){
+      var u = m.userData;
+      var a = t * u.speed + u.phase;
+      m.position.set(
+        baseX + Math.cos(a) * u.r,
+        baseY + Math.sin(a * 1.3 + u.phase) * u.ySpread + .3,
+        Math.sin(a) * u.r * .5 - 1.2
+      );
+      m.rotation.x += .004 + i*.001;
+      m.rotation.y += .005;
+    });
+
+    // カメラの微パララックス(注視点は文字とキャラの中間)
+    var lookX = baseX * .72;
+    camera.position.x += (lookX + pointer.x * .5 - camera.position.x) * .05;
+    camera.position.y += (.3 + pointer.y * .3 - camera.position.y) * .05;
+    camera.lookAt(lookX, baseY + .2, 0);
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(frame);
+  }
+  frame();
+})();
 </script>
 </body>
 </html>
