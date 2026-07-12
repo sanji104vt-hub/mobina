@@ -1,7 +1,9 @@
 {
   // リポジトリのルートに置く。public/index.html を静的配信する設定。
   // これが無いと「エントリポイントが無い」エラーでビルド失敗する（Moilumで踏んだ罠）。
+  // src/worker.js で workers.dev → mobina.asutelu.com に301。それ以外は ASSETS にフォールバック。
   "name": "mobina",
+  "main": "./src/worker.js",
   "compatibility_date": "2026-06-21",
-  "assets": { "directory": "./public" }
+  "assets": { "directory": "./public", "binding": "ASSETS" }
 }

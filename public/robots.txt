@@ -4,4 +4,4 @@ Allow: /
 
 # クロール不要なものがあればここに Disallow を追記（差分で）
 
-Sitemap: https://mobina.sanji-104vt.workers.dev/sitemap.xml
+Sitemap: https://mobina.asutelu.com/sitemap.xml
