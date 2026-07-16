@@ -19,7 +19,7 @@ const AFFILIATE_ID = process.env.RAKUTEN_AFFILIATE_ID || "";
 const REFERER = (process.env.RAKUTEN_REFERER || "").trim();
 const ACCESS_KEY = (process.env.RAKUTEN_ACCESS_KEY || "").trim();
 const INDEX_PATH = "./public/index.html";
-const API = "https://openapi.rakuten.co.jp/ichibams/api/IchibaItem/Search/20220601";  // 2026新仕様（旧 app.rakuten.co.jp は停止）
+const API = "https://openapi.rakuten.co.jp/ichibams/api/IchibaItem/Search/20260701";  // 2026-07最新版
 
 if (!APP_ID) { console.error("✕ RAKUTEN_APP_ID が未設定です。"); process.exit(1); }
 if (!REFERER) console.warn("⚠ RAKUTEN_REFERER 未設定（Web appタイプだと弾かれます）");
@@ -82,15 +82,24 @@ const PRICE_RANGE = {
 };
 /* アクセサリ等の除外ワード */
 const EXCLUDE = {
-  earphone: /ケース|カバー|イヤーピース|イヤーフック|イヤーパッド|交換用|互換|フィルム|保護|ストラップ|収納|ホルダー|シール|変換|分配|片耳のみ|抗菌/,
+  earphone: /ケース|カバー|イヤーピース|イヤーフック|イヤーパッド|交換用|互換|フィルム|保護|ストラップ|収納|ホルダー|シール|変換|分配|片耳のみ|抗菌|集音器|補聴器/,
   battery: /ケース|カバー|フィルム|保護|交換用|互換|スタンド|ホルダー|収納|変換|シール|ステッカー|単体|ポーチ/,
   smarttag: /ケース|カバー|ホルダー|キーホルダー|フィルム|保護|交換用|互換|バンド|ストラップ|シリコン|アクセサリ|ボタン電池|電池\s*単体|3個|4個/,
   gan: /ケース|カバー|保護|フィルム|交換用|互換|ケーブルのみ|ケーブル単体|延長コード/,
   ssd: /ケース|カバー|保護|フィルム|交換用|互換|SDカード|microSD|USBメモリ|変換アダプタ|ケーブルのみ/,
-  stand: /フィルム|保護|交換用|互換|ケーブルのみ/,
-  pouch: /ケース|カバー|保護フィルム|交換用|イヤホン専用/,
+  stand: /フィルム|保護|交換用|互換|ケーブルのみ|ハンディファン|扇風機|冷却|ノートパソコン|パソコンスタンド|自撮り棒|三脚|セルカ棒/,
+  pouch: /ケース|カバー|保護フィルム|交換用|イヤホン専用|充電式カイロ|電気カイロ|圧縮ポーチ|旅行収納|化粧ポーチ|メイクポーチ|スマホポーチ|バッグインバッグ|ブックポーチ|サコッシュ/,
 };
-const MIN_REVIEWS = 3;
+const MIN_REVIEWS = 10;
+
+/* 安全性・仕様の裏取りが重要なカテゴリは、実績あるメーカー品に限定する */
+const TRUSTED_BRAND = {
+  earphone: /Anker|Soundcore|SOUNDPEATS|EarFun|Sony|ソニー|Shokz|JBL|Jabra|Bose|BOSE|final|Victor|JVC|audio-technica|オーディオテクニカ|Nothing|Technics|Beats|NUARL|ambie|HUAWEI|Samsung/i,
+  battery: /Anker|CIO|ELECOM|エレコム|cheero|UGREEN|Belkin|AUKEY|BUFFALO|MOTTERU|オウルテック|Owltech|RORRY|Baseus/i,
+  smarttag: /UGREEN|Tile|MAMORIO|Apple AirTag|AirTag アップル|Anker.*eufy/,
+  gan: /Anker|CIO|UGREEN|Belkin|AUKEY|ELECOM|エレコム|多摩電子|サンワ|MOTTERU|オウルテック|Owltech/i,
+  ssd: /SanDisk|Western Digital|\bWD\b|Crucial|BUFFALO|I-O DATA|アイ・オー・データ|Transcend|Seagate|Logitec|Samsung/i,
+};
 
 const BRANDS = ["Anker","Soundcore","SOUNDPEATS","EarFun","Sony","ソニー","Shokz","JBL","Jabra","Bose","BOSE",
   "final","Victor","JVC","audio-technica","オーディオテクニカ","Nothing","CIO","ELECOM","エレコム","cheero",
@@ -169,6 +178,23 @@ function cleanName(s){
     .replace(/送料無料|ポイント\s?\d+倍?|あす楽|楽天\s?\d*位|国内発送|正規品|新品未使用|新品|セール|期間限定|限定|お買い物マラソン|SALE|公式|即納/gi,"")
     .replace(/\s+/g," ").trim().slice(0,48);
 }
+const CURATED_EXCLUDE = /ケース|カバー|フィルム|保護|交換用|互換|イヤーピース|ストラップ|ホルダー|収納袋|収納ポーチ/;
+function normalized(s){ return (s||"").toLowerCase().replace(/[^a-z0-9ぁ-んァ-ヶ一-龠]/g,""); }
+function chooseCurated(items, entry){
+  const target = normalized(entry.name);
+  const brand = normalized(entry.brand.split("/")[0]);
+  return items
+    .filter(it=>!CURATED_EXCLUDE.test(it.itemName||""))
+    .map(it=>{
+      const name = normalized(it.itemName);
+      let score = name.includes(target) ? 100 : 0;
+      if(brand && name.includes(brand)) score += 10;
+      for(const token of target.match(/[a-z]+\d+[a-z0-9]*/g)||[]) if(name.includes(token)) score += 30;
+      score += Math.min(10, Math.log10(Number(it.reviewCount)||1)*2);
+      return {it,score};
+    })
+    .sort((a,b)=>b.score-a.score)[0]?.it;
+}
 function detectBrand(name, shop){
   const hit = BRANDS.find(b => new RegExp(b.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),"i").test(name));
   if(hit) return hit==="ソニー"?"Sony":hit==="エレコム"?"ELECOM":hit==="オーディオテクニカ"?"audio-technica":hit;
@@ -203,18 +229,17 @@ async function buildCurated(){
   const out=[];
   for(const e of seed){
     try{
-      const items = await search(e.rakutenKeyword || e.name, 3);
-      const it = items[0];
-      const dyn = it ? {
+      const items = await search(e.rakutenKeyword || e.name, 10);
+      const it = chooseCurated(items, e);
+      if(!it){ console.warn(`  ↷ ${e.id}: 楽天で本体商品を確認できないため今回は非掲載`); await sleep(1100); continue; }
+      const dyn = {
         price: it.itemPrice ?? null, rating: Number(it.reviewAverage)||0, reviews: Number(it.reviewCount)||0,
         image: upscale(it.mediumImageUrls?.[0]?.imageUrl||""), purchase: it.affiliateUrl||it.itemUrl||"#",
-      } : { price:null, rating:0, reviews:0, image:"", purchase:"#" };
+      };
       out.push({ id:e.id, cat:e.cat, brand:e.brand, name:e.name, ...dyn,
         weight:e.weight, spec_value:e.spec_value, icon:e.icon, tags:e.tags, specs:e.specs, axes:e.axes, pick:e.pick });
       console.log(`  ★ ${e.id.padEnd(26)} ¥${dyn.price}`);
-    }catch(err){ console.warn(`  ⚠ ${e.id}: ${err.message}`);
-      out.push({ id:e.id, cat:e.cat, brand:e.brand, name:e.name, price:null, rating:0, reviews:0,
-        image:"", purchase:"#", weight:e.weight, spec_value:e.spec_value, icon:e.icon, tags:e.tags, specs:e.specs, axes:e.axes, pick:e.pick }); }
+    }catch(err){ console.warn(`  ⚠ ${e.id}: ${err.message}（リンクを確認できないため今回は非掲載）`); }
     await sleep(1100);
   }
   return out;
@@ -233,6 +258,7 @@ async function buildAuto(curatedCodes){
           if(!code || seen.has(code)) continue;
           const name = it.itemName||"";
           if(EXCLUDE[cat].test(name)) continue;
+          if(TRUSTED_BRAND[cat] && !TRUSTED_BRAND[cat].test(name)) continue;
           const price = it.itemPrice||0, reviews = Number(it.reviewCount)||0;
           const [lo,hi]=PRICE_RANGE[cat];
           if(price<lo || price>hi || reviews<MIN_REVIEWS) continue;
@@ -279,7 +305,17 @@ async function buildAuto(curatedCodes){
       };
     });
     products.sort((a,b)=> ((b.cospa+b.trust)/2) - ((a.cospa+a.trust)/2));
-    result[cat] = products.slice(0, cfg.target);
+    const seenModels = new Set();
+    const deduped = products.filter(p=>{
+      const asciiModel = p.name.toLowerCase().replace(/[^a-z0-9]/g,"");
+      const key = TRUSTED_BRAND[cat] && asciiModel.length >= 12
+        ? asciiModel.slice(0,36)
+        : normalized(p.name).slice(0,40);
+      if(!key || seenModels.has(key)) return false;
+      seenModels.add(key);
+      return true;
+    });
+    result[cat] = deduped.slice(0, cfg.target);
     console.log(`  ✓ [${cat}] 採用 ${result[cat].length}/${cfg.target}`);
   }
   return result;
