@@ -267,6 +267,9 @@ h1.hero-title .hm{color:var(--magenta);text-shadow:0 0 22px var(--magenta-glow)}
 .empty h3{font-family:var(--disp);color:#fff;margin-bottom:6px;font-weight:600}
 .empty button{margin-top:18px;font-family:var(--mono);background:none;color:var(--cyan);border:1px solid var(--cyan);padding:10px 18px;cursor:pointer;letter-spacing:.05em;text-transform:uppercase}
 .empty button:hover{background:var(--cyan);color:#03121a}
+.load-more-wrap{text-align:center;margin:-34px 0 64px}
+.load-more{font-family:var(--mono);font-weight:700;background:transparent;color:var(--cyan);border:1px solid var(--cyan);padding:13px 26px;cursor:pointer;letter-spacing:.05em;box-shadow:0 0 20px rgba(26,231,255,.08)}
+.load-more:hover{background:var(--cyan);color:#03121a}
 
 /* ====== フッター ====== */
 .site-footer{border-top:1px solid var(--line-bright);background:var(--panel-2);padding:48px 0 30px;margin-top:18px;position:relative;z-index:2}
@@ -597,28 +600,28 @@ h1.hero-title .hm{color:var(--magenta);text-shadow:0 0 22px var(--magenta-glow)}
       <h3>カバンの中を、部門べつに研究する。</h3>
     </div>
     <div class="bento reveal">
-      <a href="#list" onclick="gotoCat('battery');return false;">
+      <a href="/category/battery" onclick="gotoCat('battery');return false;">
         <span class="badge">MOST READ</span>
         <span class="cat-en">POWER BANK</span>
         <span class="cat-ja">モバイルバッテリー</span>
         <span class="cat-note">重さと容量の最適解を探す部門</span>
       </a>
-      <a href="#list" onclick="gotoCat('earphone');return false;">
+      <a href="/category/earphone" onclick="gotoCat('earphone');return false;">
         <span class="cat-en">AUDIO</span>
         <span class="cat-ja">イヤホン・オーディオ</span>
         <span class="cat-note">通勤1時間を「自分の時間」に変える</span>
       </a>
-      <a href="#list" onclick="gotoCat('gan');return false;">
+      <a href="/category/gan" onclick="gotoCat('gan');return false;">
         <span class="cat-en">GaN CHARGER</span>
         <span class="cat-ja">GaN充電器</span>
         <span class="cat-note">「1本で全部」を目指す</span>
       </a>
-      <a href="#list" onclick="gotoCat('ssd');return false;">
+      <a href="/category/ssd" onclick="gotoCat('ssd');return false;">
         <span class="cat-en">STORAGE</span>
         <span class="cat-ja">ポータブルSSD</span>
         <span class="cat-note">旅先の写真・動画を守る</span>
       </a>
-      <a href="#list" onclick="gotoCat('smarttag');return false;">
+      <a href="/category/smarttag" onclick="gotoCat('smarttag');return false;">
         <span class="cat-en">SMART TAG</span>
         <span class="cat-ja">スマートタグ</span>
         <span class="cat-note">忘れ物・紛失防止の相棒</span>
@@ -715,6 +718,7 @@ h1.hero-title .hm{color:var(--magenta);text-shadow:0 0 22px var(--magenta-glow)}
   </div>
 
   <div class="grid" id="grid"></div>
+  <div class="load-more-wrap" id="loadMoreWrap" hidden><button class="load-more" id="loadMore" type="button">さらに表示</button></div>
 </main>
 
 <section class="wrap view" id="rankingView" data-view="ranking">
@@ -1102,11 +1106,20 @@ function buildEfficiencyRanks(){
 }
 const EFF_RANK = buildEfficiencyRanks();
 
-let state = { cat:"all", q:"", sort:"recommend", priceMin:0, priceMax:50000, weightMin:0, weightMax:700, tag:new Set() };
+const routeCategory = location.pathname.match(/^\/category\/([^/]+)\/?$/)?.[1];
+let state = { cat:CAT_META[routeCategory] ? routeCategory : "all", q:"", sort:"recommend", priceMin:0, priceMax:50000, weightMin:0, weightMax:700, tag:new Set() };
 const PRICE_CAP = 50000;
 const WEIGHT_CAP = 700;
+const PAGE_SIZE = 24;
+let visibleLimit = PAGE_SIZE;
 const favs = new Set(JSON.parse(localStorage.getItem("mobina_favs")||"[]"));
 const AXIS_LABELS = {cospa:"コスパ", portability:"携帯性", performance:"性能", usability:"使いやすさ", trust:"信頼性"};
+
+function setCategoryPath(cat){
+  const path = cat==="all" ? "/" : `/category/${cat}`;
+  history.pushState({}, "", path);
+  document.querySelector('link[rel="canonical"]').href = location.origin + path;
+}
 
 function apply(){
   let list = PRODUCTS.filter(p=>{
@@ -1144,7 +1157,7 @@ function apply(){
         const sb = eb.lowerIsBetter ? -eb.value : eb.value;
         return sb-sa;
       }
-      default: return mobinaScore(b)-mobinaScore(a);
+      default: return Number(Boolean(b.axes))-Number(Boolean(a.axes)) || mobinaScore(b)-mobinaScore(a);
     }
   });
   return list;
@@ -1225,13 +1238,23 @@ function card(p, rank){
 function render(){
   const list = apply();
   const grid = document.getElementById("grid");
+  const loadMoreWrap = document.getElementById("loadMoreWrap");
   document.getElementById("count").textContent = String(list.length).padStart(2,"0");
   if(!list.length){
+    loadMoreWrap.hidden = true;
     grid.innerHTML = `<div class="empty"><div class="big">⌗</div><h3>NO UNITS MATCHED</h3><p>条件に合う商品が見つかりませんでした。検索や絞り込みを変えてみてください。</p><button id="reset">RESET // 条件をリセット</button></div>`;
     document.getElementById("reset").onclick = resetAll;
     return;
   }
-  grid.innerHTML = list.map(card).join("");
+  const visible = list.slice(0, visibleLimit);
+  grid.innerHTML = visible.map(card).join("");
+  loadMoreWrap.hidden = visible.length >= list.length;
+  if(!loadMoreWrap.hidden){
+    const remaining = list.length - visible.length;
+    const loadMore = document.getElementById("loadMore");
+    loadMore.textContent = `さらに表示（残り${remaining}件）`;
+    loadMore.onclick = ()=>{ visibleLimit += PAGE_SIZE; render(); };
+  }
   grid.querySelectorAll("[data-fav]").forEach(btn=>{
     btn.onclick = ()=>{
       const id = btn.dataset.fav;
@@ -1253,6 +1276,8 @@ function resetAll(){
   document.getElementById("wMax").value=WEIGHT_CAP;
   syncSlider(); syncWeightSlider();
   document.querySelectorAll("#catChips .chip").forEach(c=>c.classList.toggle("is-active", c.dataset.cat==="all"));
+  setCategoryPath("all");
+  visibleLimit = PAGE_SIZE;
   updateFilterBadge();
   render();
 }
@@ -1291,11 +1316,13 @@ function syncWeightSlider(){
   fill.style.right = (100 - hi/WEIGHT_CAP*100)+"%";
 }
 
-document.getElementById("search").addEventListener("input", e=>{ state.q=e.target.value; render(); });
-document.getElementById("sort").addEventListener("change", e=>{ state.sort=e.target.value; render(); });
+document.getElementById("search").addEventListener("input", e=>{ state.q=e.target.value; visibleLimit=PAGE_SIZE; render(); });
+document.getElementById("sort").addEventListener("change", e=>{ state.sort=e.target.value; visibleLimit=PAGE_SIZE; render(); });
 document.getElementById("catChips").addEventListener("click", e=>{
   const chip = e.target.closest(".chip"); if(!chip) return;
   state.cat = chip.dataset.cat;
+  setCategoryPath(state.cat);
+  visibleLimit = PAGE_SIZE;
   document.querySelectorAll("#catChips .chip").forEach(c=>c.classList.toggle("is-active", c===chip));
   render();
 });
@@ -1305,14 +1332,14 @@ document.getElementById("filterToggle").addEventListener("click", ()=>{
 document.querySelectorAll('[data-f="tag"]').forEach(cb=>{
   cb.addEventListener("change", ()=>{
     cb.checked?state.tag.add(cb.value):state.tag.delete(cb.value);
-    updateFilterBadge(); render();
+    updateFilterBadge(); visibleLimit=PAGE_SIZE; render();
   });
 });
 ["prMin","prMax"].forEach(id=>{
-  document.getElementById(id).addEventListener("input", ()=>{ syncSlider(); updateFilterBadge(); render(); });
+  document.getElementById(id).addEventListener("input", ()=>{ syncSlider(); updateFilterBadge(); visibleLimit=PAGE_SIZE; render(); });
 });
 ["wMin","wMax"].forEach(id=>{
-  document.getElementById(id).addEventListener("input", ()=>{ syncWeightSlider(); updateFilterBadge(); render(); });
+  document.getElementById(id).addEventListener("input", ()=>{ syncWeightSlider(); updateFilterBadge(); visibleLimit=PAGE_SIZE; render(); });
 });
 
 /* ====== ビュー切替 ====== */
@@ -1434,12 +1461,23 @@ function populateSodaPicks(){
 /* ===== SODA LAB: bentoカテゴリタイルから既存フィルタを操作 ===== */
 function gotoCat(cat){
   state.cat = cat;
+  setCategoryPath(cat);
+  visibleLimit = PAGE_SIZE;
   document.querySelectorAll("#catChips .chip").forEach(c=>c.classList.toggle("is-active", c.dataset.cat===cat));
   render();
   document.getElementById("list").scrollIntoView({behavior:"smooth", block:"start"});
 }
 
 document.getElementById("priceDate").textContent = PRICE_DATE;
+document.querySelectorAll("#catChips .chip").forEach(c=>c.classList.toggle("is-active", c.dataset.cat===state.cat));
+window.addEventListener("popstate", ()=>{
+  const cat = location.pathname.match(/^\/category\/([^/]+)\/?$/)?.[1];
+  state.cat = CAT_META[cat] ? cat : "all";
+  visibleLimit = PAGE_SIZE;
+  document.querySelectorAll("#catChips .chip").forEach(c=>c.classList.toggle("is-active", c.dataset.cat===state.cat));
+  document.querySelector('link[rel="canonical"]').href = location.href;
+  render();
+});
 syncSlider();
 syncWeightSlider();
 render();
