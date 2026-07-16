@@ -23,6 +23,14 @@ export default {
     if (match && categoryMeta[match[1]]) {
       const [label, description] = categoryMeta[match[1]];
       const canonical = `https://mobina.asutelu.com/category/${match[1]}`;
+      const breadcrumbJson = JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Mobina', item: 'https://mobina.asutelu.com/' },
+          { '@type': 'ListItem', position: 2, name: label, item: canonical }
+        ]
+      });
       const assetUrl = new URL('/', url);
       const response = await env.ASSETS.fetch(new Request(assetUrl, request));
       return new HTMLRewriter()
@@ -32,6 +40,10 @@ export default {
         .on('meta[property="og:title"]', { element(el) { el.setAttribute('content', `Mobina｜${label}`); } })
         .on('meta[property="og:description"]', { element(el) { el.setAttribute('content', description); } })
         .on('meta[property="og:url"]', { element(el) { el.setAttribute('content', canonical); } })
+        .on('head', { element(el) { el.append(`<script type="application/ld+json">${breadcrumbJson}<\/script>`, { html: true }); } })
+        .on('.hero-inner', { element(el) { el.prepend(`<nav class="breadcrumb" aria-label="パンくずリスト"><a href="/">ホーム</a><span aria-hidden="true">›</span><span>${label}</span></nav>`, { html: true }); } })
+        .on('h1.hero-title', { element(el) { el.setInnerContent(label); } })
+        .on('.hero-sub', { element(el) { el.setInnerContent(description); } })
         .transform(response);
     }
     return env.ASSETS.fetch(request);
